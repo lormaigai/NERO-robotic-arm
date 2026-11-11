@@ -1,4 +1,4 @@
-// NERO research log — scroll-triggered motion
+// NERO research log - scroll-triggered motion
 
 // Nav shadow after scrolling past the hero fold
 const nav = document.getElementById('nav');
