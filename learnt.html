@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What we learnt · NERO</title>
+<meta name="description" content="NERO research log: initial literature notes by research day, for team review.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="nav-brand" href="index.html">NERO</a>
+  <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="menu">
+    <span></span><span></span>
+  </button>
+</header>
+
+<div class="menu" id="menu" aria-hidden="true">
+  <nav class="menu-links">
+    <a href="index.html" style="--i:0">Home</a>
+    <a href="research.html" style="--i:1">Research <em>&amp; lit review</em></a>
+    <a href="learnt.html" style="--i:2">What <em>we learnt</em></a>
+    <a href="ideation.html" style="--i:3">Ideation <em>&amp; development</em></a>
+  </nav>
+  <p class="menu-foot">RDP 2026 &middot; project research log</p>
+</div>
+
+<header class="page-head stripes">
+  <p class="hero-overline" data-load="0">NERO &middot; RDP 2026</p>
+  <h1 class="page-title" data-load="1">What <em>we learnt</em></h1>
+  <p class="page-sub" data-load="2">Notes from each research day, organised by date.</p>
+</header>
+
+<main class="sub">
+
+<details class="log-entry" id="day-2026-11-11" open>
+  <summary class="log-toggle" data-reveal>
+    <span class="log-date">11 <em>Nov</em> 2026</span>
+    <span class="log-tags"><span>D2</span><span>Research day</span></span>
+    <svg class="log-chevron" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </summary>
+  <div class="log-body"><div class="log-inner">
+
+  <section class="section" id="learnt">
+    <p class="section-note" data-reveal>Initial literature notes from day 2, for the team to review together. These are readings of other people's papers, not results from our own experiments. Nothing below has been run on NERO yet.</p>
+
+    <div class="learn-grid">
+      <div class="card learn" data-reveal style="--i:0">
+        <h4>Data quality keeps coming up</h4>
+        <p>Across the papers, results track the quality of the demonstrations. Imitation-learning errors compound over time, which is why auditing and cleaning the dataset is a core stage of our planned pipeline, not an afterthought.</p>
+      </div>
+      <div class="card learn" data-reveal style="--i:1">
+        <h4>Chunking targets drift</h4>
+        <p>ACT's core trick, predicting a short sequence of actions at once, directly attacks compounding error, and its docs describe training in hours on one GPU. One option to put to the team: ACT as our first baseline.</p>
+      </div>
+      <div class="card learn" data-reveal style="--i:2">
+        <h4>Diffusion handles "more than one right move"</h4>
+        <p>When demos contain several valid strategies, a plain regression policy averages them into a bad one. Diffusion Policy models the whole distribution instead, using iterative denoising at inference.</p>
+      </div>
+      <div class="card learn" data-reveal style="--i:3">
+        <h4>Foundation models as a later step</h4>
+        <p>GR00T shows where the field is heading: one generalist model, post-trained per robot. At 2B+ parameters it is far heavier than ACT. One proposal: revisit it only after a smaller baseline is working.</p>
+      </div>
+      <div class="card learn" data-reveal style="--i:4">
+        <h4>Plain RGB is a legitimate starting point</h4>
+        <p>ALOHA reaches its reported results with commodity webcams and no depth sensor. Depth adds geometric information but also hardware, sync and calibration overhead. A trade-off for us to test, not assume.</p>
+      </div>
+      <div class="card learn" data-reveal style="--i:5">
+        <h4>Existing tooling: LeRobot</h4>
+        <p>Hugging Face LeRobot ships dataset formats, training scripts and ACT out of the box. One proposal for the team: build our pipeline on top of it rather than starting from scratch.</p>
+      </div>
+    </div>
+  </section>
+
+  </div></div>
+</details>
+
+</main>
+
+<footer class="footer">
+  <p class="footer-name">NERO</p>
+  <p>RDP 2026 &middot; AI data pipeline for a robotic arm &middot; research log started 11 Nov 2026</p>
+</footer>
+
+<div class="nero-buddy" aria-hidden="true">
+<svg viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg">
+  <circle class="buddy-badge" cx="60" cy="72" r="56"/>
+  <rect class="buddy-base" x="38" y="110" width="44" height="12" rx="6"/>
+  <g class="buddy-lower">
+    <rect class="buddy-seg1" x="54" y="64" width="12" height="48" rx="6"/>
+    <circle class="buddy-joint" cx="60" cy="106" r="7"/>
+    <circle class="buddy-eye" cx="60" cy="106" r="2.4"/>
+    <g class="buddy-upper">
+      <rect class="buddy-seg2" x="54" y="28" width="12" height="42" rx="6"/>
+      <circle class="buddy-accent" cx="60" cy="64" r="4"/>
+      <g class="buddy-claw-l"><rect class="buddy-claw" x="51" y="14" width="6" height="16" rx="3"/></g>
+      <g class="buddy-claw-r"><rect class="buddy-claw" x="63" y="14" width="6" height="16" rx="3"/></g>
+      <circle class="buddy-joint2" cx="60" cy="28" r="5"/>
+    </g>
+  </g>
+</svg>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

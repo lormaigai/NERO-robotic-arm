@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ideation &amp; development · NERO</title>
+<meta name="description" content="NERO research log: pipeline plan, lab photos and session clips, organised by project day.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="nav-brand" href="index.html">NERO</a>
+  <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="menu">
+    <span></span><span></span>
+  </button>
+</header>
+
+<div class="menu" id="menu" aria-hidden="true">
+  <nav class="menu-links">
+    <a href="index.html" style="--i:0">Home</a>
+    <a href="research.html" style="--i:1">Research <em>&amp; lit review</em></a>
+    <a href="learnt.html" style="--i:2">What <em>we learnt</em></a>
+    <a href="ideation.html" style="--i:3">Ideation <em>&amp; development</em></a>
+  </nav>
+  <p class="menu-foot">RDP 2026 &middot; project research log</p>
+</div>
+
+<header class="page-head stripes">
+  <p class="hero-overline" data-load="0">NERO &middot; RDP 2026</p>
+  <h1 class="page-title" data-load="1">Ideation <em>&amp; development</em></h1>
+  <p class="page-sub" data-load="2">The plan, the bench, and what happens next, organised by project day.</p>
+</header>
+
+<main class="sub">
+
+<details class="log-entry" id="day-2026-11-11" open>
+  <summary class="log-toggle" data-reveal>
+    <span class="log-date">11 <em>Nov</em> 2026</span>
+    <span class="log-tags"><span>D2</span><span>Research day</span></span>
+    <svg class="log-chevron" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </summary>
+  <div class="log-body"><div class="log-inner">
+
+  <section class="section" id="ideation">
+    <p class="section-note" data-reveal>The working plan from our D2 list. These are planned steps, not completed work.</p>
+
+    <div class="roadmap">
+      <div class="road-item card" data-reveal style="--i:0">
+        <p class="road-no">Step 1</p>
+        <h4>Dataset auditing</h4>
+        <p>Watch every recorded episode, flag failures and out-of-distribution moments, and keep a manifest of what each episode contains. Decide acceptance criteria before collecting more.</p>
+      </div>
+      <div class="road-item card" data-reveal style="--i:1">
+        <p class="road-no">Step 2</p>
+        <h4>Trajectory cleaning &amp; smoothing</h4>
+        <p>Remove jitter and teleoperation noise from joint trajectories (for example low-pass filtering), fix timestamps and dropped frames so the policy learns smooth motion.</p>
+      </div>
+      <div class="road-item card" data-reveal style="--i:2">
+        <p class="road-no">Step 3</p>
+        <h4>Cleaning &amp; purging data</h4>
+        <p>Delete corrupted or failed episodes, deduplicate near-identical segments, and rebalance the dataset so the policy doesn't overfit one behaviour.</p>
+      </div>
+      <div class="road-item card" data-reveal style="--i:3">
+        <p class="road-no">Step 4</p>
+        <h4>Camera: RGB vs RGB&#8209;D</h4>
+        <p>Benchmark both. Start RGB-only (matching ACT/ALOHA); add depth if tasks need geometry that colour alone can't give, weighing the extra calibration and sync work.</p>
+      </div>
+    </div>
+
+    <h3 class="subhead" data-reveal>In the lab</h3>
+    <div class="lab-grid">
+      <figure class="lab-item" data-reveal style="--i:0">
+        <img src="assets/nero-arm.jpg" alt="The NERO robotic arm (AgileX) on its bench with a mini conveyor and coloured test blocks" loading="lazy">
+        <figcaption>The NERO arm (AgileX) on its bench, with the mini conveyor and test blocks we use for data collection.</figcaption>
+      </figure>
+      <figure class="lab-item" data-reveal style="--i:1">
+        <img src="assets/episode-viewer.jpg" alt="Monitor showing the rerun viewer replaying a recorded episode with camera feeds, joint-position and action traces" loading="lazy">
+        <figcaption>Reviewing a recorded episode in rerun: front and wrist camera feeds alongside joint-position and action traces.</figcaption>
+      </figure>
+      <figure class="lab-item" data-reveal style="--i:2">
+        <video src="assets/lab-session.mp4" poster="assets/lab-session-poster.jpg" controls loop muted playsinline preload="none"></video>
+        <figcaption>Checking the 3D visualisation during a lab session.</figcaption>
+      </figure>
+    </div>
+
+    <div class="next card" data-reveal>
+      <h4>Up next</h4>
+      <p>Finish the ACT vs Diffusion vs GR00T comparison (D2 research slot, 2:00-2:30pm), then propose a small LeRobot ACT training run on the cleaned dataset as the first end-to-end test of the pipeline.</p>
+    </div>
+  </section>
+
+  </div></div>
+</details>
+
+</main>
+
+<footer class="footer">
+  <p class="footer-name">NERO</p>
+  <p>RDP 2026 &middot; AI data pipeline for a robotic arm &middot; research log started 11 Nov 2026</p>
+</footer>
+
+<div class="nero-buddy" aria-hidden="true">
+<svg viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg">
+  <circle class="buddy-badge" cx="60" cy="72" r="56"/>
+  <rect class="buddy-base" x="38" y="110" width="44" height="12" rx="6"/>
+  <g class="buddy-lower">
+    <rect class="buddy-seg1" x="54" y="64" width="12" height="48" rx="6"/>
+    <circle class="buddy-joint" cx="60" cy="106" r="7"/>
+    <circle class="buddy-eye" cx="60" cy="106" r="2.4"/>
+    <g class="buddy-upper">
+      <rect class="buddy-seg2" x="54" y="28" width="12" height="42" rx="6"/>
+      <circle class="buddy-accent" cx="60" cy="64" r="4"/>
+      <g class="buddy-claw-l"><rect class="buddy-claw" x="51" y="14" width="6" height="16" rx="3"/></g>
+      <g class="buddy-claw-r"><rect class="buddy-claw" x="63" y="14" width="6" height="16" rx="3"/></g>
+      <circle class="buddy-joint2" cx="60" cy="28" r="5"/>
+    </g>
+  </g>
+</svg>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
