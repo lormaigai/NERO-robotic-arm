@@ -10,4 +10,4 @@ Plain HTML/CSS/JS, no build step. Open `index.html` directly, or serve the folde
 python3 -m http.server
 ```
 
-To publish on GitHub Pages: Settings -> Pages -> deploy from branch `main` (root).
+To publish on GitHub Pages: Settings -> Pages -> deploy from branch `main` (root). The site is four static pages (`index.html`, `research.html`, `learnt.html`, `ideation.html`) sharing `styles.css` and `script.js`; media lives in `assets/`.

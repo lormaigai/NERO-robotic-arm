@@ -1,10 +1,24 @@
-// NERO research log - scroll-triggered motion
+// NERO research log - scroll-triggered motion, menu, to-do
 
-// Nav shadow after scrolling past the hero fold
-const nav = document.getElementById('nav');
-const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 40);
-window.addEventListener('scroll', onScroll, { passive: true });
-onScroll();
+// Topbar shadow after scrolling past the fold
+const topbar = document.querySelector('.topbar');
+if (topbar) {
+  const onScroll = () => topbar.classList.toggle('scrolled', window.scrollY > 40);
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+}
+
+// Hamburger menu
+const burger = document.getElementById('burger');
+const menu = document.getElementById('menu');
+const setMenu = (open) => {
+  document.body.classList.toggle('nav-open', open);
+  if (burger) burger.setAttribute('aria-expanded', String(open));
+  if (menu) menu.setAttribute('aria-hidden', String(!open));
+};
+if (burger) burger.addEventListener('click', () => setMenu(!document.body.classList.contains('nav-open')));
+document.querySelectorAll('.menu-links a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenu(false); });
 
 // Reveal-on-scroll
 const revealObserver = new IntersectionObserver(
@@ -24,6 +38,10 @@ document.querySelectorAll('[data-reveal]').forEach((el) => revealObserver.observ
 const animateCount = (el) => {
   const target = parseFloat(el.dataset.count);
   const decimals = parseInt(el.dataset.decimals || '0', 10);
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    el.textContent = target.toFixed(decimals);
+    return;
+  }
   const duration = 1400;
   const start = performance.now();
   const tick = (now) => {
@@ -47,3 +65,13 @@ const countObserver = new IntersectionObserver(
   { threshold: 0.6 }
 );
 document.querySelectorAll('.count').forEach((el) => countObserver.observe(el));
+
+// Open the date entry when an in-page link targets something inside it
+for (const link of document.querySelectorAll('a[href^="#"]')) {
+  link.addEventListener('click', () => {
+    const target = document.querySelector(link.getAttribute('href'));
+    if (!target) return;
+    const entry = target.closest('details');
+    if (entry) entry.open = true;
+  });
+}
