@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NERO — AI Data Pipeline for a Robotic Arm · RDP 2026</title>
+<meta name="description" content="Research log for the NERO robotic arm: imitation-learning policy comparison (ACT vs Diffusion vs GR00T), dataset auditing and trajectory cleaning. RDP 2026.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <a class="nav-brand" href="#top">NERO</a>
+  <div class="nav-links">
+    <a href="#research">Research</a>
+    <a href="#learnt">What we learnt</a>
+    <a href="#ideation">Ideation</a>
+  </div>
+</nav>
+
+<header class="hero stripes" id="top">
+  <p class="hero-overline" data-load="0">RDP 2026 &middot; Project research log</p>
+  <h1 class="hero-title" aria-label="NERO">
+    <span data-load="1">N</span><span data-load="2">E</span><span data-load="3">R</span><span data-load="4">O</span>
+  </h1>
+  <p class="hero-script" data-load="5">robotic arm</p>
+  <p class="hero-sub" data-load="6">An AI data pipeline: from raw demonstrations<br>to a trained manipulation policy.</p>
+  <div class="hero-meta" data-load="7">
+    <span>D2 &middot; 11 Nov 2026</span>
+    <span>Imitation learning</span>
+    <span>Dataset engineering</span>
+  </div>
+  <a class="hero-cta" href="#research" data-load="8">Read the research<span aria-hidden="true">&darr;</span></a>
+</header>
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span>Imitation learning &#10035; Data pipeline &#10035; ACT &#10035; Diffusion policy &#10035; GR00T &#10035; Trajectories &#10035; </span><span>Imitation learning &#10035; Data pipeline &#10035; ACT &#10035; Diffusion policy &#10035; GR00T &#10035; Trajectories &#10035; </span>
+  </div>
+</div>
+
+<main>
+
+<!-- ============ 01 RESEARCH / LIT REVIEW ============ -->
+<section class="section" id="research">
+  <div class="section-head" data-reveal>
+    <p class="section-no">01</p>
+    <h2 class="section-title">Research <em>&amp; lit review</em></h2>
+  </div>
+
+  <div class="overview card" data-reveal>
+    <h3 class="card-kicker">Overview — what this whole thing is</h3>
+    <p class="overview-lede">We are teaching a robotic arm (<strong>NERO</strong>) to manipulate objects by <em>imitating human demonstrations</em> instead of being hand-programmed. The pipeline looks like this:</p>
+    <ol class="pipeline">
+      <li data-reveal style="--i:0"><span class="pipeline-step">Collect</span>Teleoperated demonstrations — camera frames plus the arm's joint positions, recorded as episodes.</li>
+      <li data-reveal style="--i:1"><span class="pipeline-step">Audit &amp; clean</span>Audit the dataset, purge bad episodes, smooth noisy trajectories.</li>
+      <li data-reveal style="--i:2"><span class="pipeline-step">Train</span>Train an imitation-learning policy that maps camera images to the arm's next actions.</li>
+      <li data-reveal style="--i:3"><span class="pipeline-step">Evaluate</span>Run the policy on the real arm, measure success rate, feed failures back into data collection.</li>
+    </ol>
+    <p class="overview-note">The open question this log tracks: <strong>which training policy should NERO use?</strong> Our shortlist from the literature: ACT, Diffusion Policy, and NVIDIA's GR00T.</p>
+  </div>
+
+  <h3 class="subhead" data-reveal>Training policies — ACT vs Diffusion vs GR00T</h3>
+
+  <div class="policy-grid">
+    <article class="card policy" data-reveal style="--i:0">
+      <p class="policy-tag">Lightweight baseline</p>
+      <h4 class="policy-name">ACT</h4>
+      <p class="policy-origin">Action Chunking with Transformers — Zhao, Kumar, Levine, Finn (2023), the ALOHA low-cost bimanual system.</p>
+      <ul>
+        <li>Predicts a <em>chunk</em> of the next k joint actions at once instead of one step at a time, which fights the compounding-error problem of imitation learning.</li>
+        <li>Transformer over ResNet-18 camera features + joint positions, with a latent style variable (CVAE).</li>
+        <li>~80M parameters; trains in a few hours on a single GPU; high success rates from ~50 demonstrations.</li>
+        <li>On ALOHA: 80–90% success on 6 fine tasks (e.g. slotting a battery, opening a cup) from about 10 minutes of demos.</li>
+        <li>First-class support in Hugging Face LeRobot — the recommended starting point.</li>
+      </ul>
+      <a class="policy-link" href="https://arxiv.org/abs/2304.13705" target="_blank" rel="noopener">Paper &nearr;</a>
+    </article>
+
+    <article class="card policy" data-reveal style="--i:1">
+      <p class="policy-tag">Stronger modelling</p>
+      <h4 class="policy-name">Diffusion Policy</h4>
+      <p class="policy-origin">Chi, Xu, Feng et al. (2023) — the visuomotor policy as a conditional denoising diffusion process.</p>
+      <ul>
+        <li>Instead of outputting one action, it <em>refines noise into an action sequence</em> over several denoising steps, conditioned on camera images.</li>
+        <li>Handles multimodal demonstrations (several valid ways to do a task) that break plain regression policies.</li>
+        <li>Receding-horizon control: re-plans every step while keeping the motion temporally consistent.</li>
+        <li>Average improvement of 46.9% over prior state of the art across 12 tasks in 4 benchmarks.</li>
+        <li>Costs more compute per inference step than ACT (iterative denoising).</li>
+      </ul>
+      <a class="policy-link" href="https://arxiv.org/abs/2303.04137" target="_blank" rel="noopener">Paper &nearr;</a>
+    </article>
+
+    <article class="card policy" data-reveal style="--i:2">
+      <p class="policy-tag">Foundation model</p>
+      <h4 class="policy-name">GR00T</h4>
+      <p class="policy-origin">NVIDIA Isaac GR00T N1 (2025) — an open foundation model for generalist humanoid robots.</p>
+      <ul>
+        <li>Dual-system design: a vision-language model (System 2) reasons about the scene and instruction; a diffusion transformer (System 1) turns the plan into continuous actions.</li>
+        <li>Cross-embodiment: one set of weights adapts to different robots through post-training on your own demos.</li>
+        <li>Trained on a large humanoid dataset plus synthetic and internet-video data; part of the dataset is open on Hugging Face.</li>
+        <li>NVIDIA reports GR00T N1 2B averaging 76.8% vs Diffusion Policy's 46.4% on its benchmark suite (vendor-reported).</li>
+        <li>Much heavier to run and fine-tune than ACT — likely overkill for a first arm.</li>
+      </ul>
+      <a class="policy-link" href="https://developer.nvidia.com/blog/accelerate-generalist-humanoid-robot-development-with-nvidia-isaac-gr00t-n1/" target="_blank" rel="noopener">Source &nearr;</a>
+    </article>
+  </div>
+
+  <div class="card table-card" data-reveal>
+    <table class="compare">
+      <thead>
+        <tr><th></th><th>ACT</th><th>Diffusion Policy</th><th>GR00T N1</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Size</td><td>~80M params</td><td>Small CNN / transformer</td><td>2B+ params</td></tr>
+        <tr><td>Demos needed</td><td>~50</td><td>Low hundreds</td><td>Post-training set on top of pretraining</td></tr>
+        <tr><td>Training cost</td><td>Hours, 1 GPU</td><td>Hours–days, 1 GPU</td><td>Heavy; fine-tune only</td></tr>
+        <tr><td>Inference</td><td>One forward pass per chunk</td><td>Iterative denoising</td><td>VLM + diffusion, heaviest</td></tr>
+        <tr><td>Best for</td><td>Getting a first policy working</td><td>Multimodal / high-precision tasks</td><td>Generalist behaviour across tasks</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="subhead" data-reveal>Research papers &amp; references</h3>
+  <ol class="refs">
+    <li data-reveal style="--i:0"><a href="https://chatgpt.com/share/6af40fcd-2818-83ec-a7f2-580ef4db9e45" target="_blank" rel="noopener">Team research thread (ChatGPT)</a><span>Working notes on the policy comparison.</span></li>
+    <li data-reveal style="--i:1"><a href="https://arxiv.org/pdf/2304.13705" target="_blank" rel="noopener">Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware</a><span>The ACT / ALOHA paper (arXiv:2304.13705).</span></li>
+    <li data-reveal style="--i:2"><a href="https://huggingface.co/docs/lerobot/main/en/act" target="_blank" rel="noopener">ACT in Hugging Face LeRobot</a><span>Docs: training and evaluation commands for ACT.</span></li>
+    <li data-reveal style="--i:3"><a href="https://arxiv.org/pdf/2303.04137" target="_blank" rel="noopener">Diffusion Policy: Visuomotor Policy Learning via Action Diffusion</a><span>arXiv:2303.04137.</span></li>
+    <li data-reveal style="--i:4"><a href="https://developer.nvidia.com/blog/accelerate-generalist-humanoid-robot-development-with-nvidia-isaac-gr00t-n1/" target="_blank" rel="noopener">NVIDIA Isaac GR00T N1 technical blog</a><span>Architecture and benchmark numbers for GR00T N1.</span></li>
+  </ol>
+</section>
+
+<!-- ============ stat band ============ -->
+<section class="band" data-reveal>
+  <div class="band-stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+  <div class="band-grid">
+    <div class="band-item">
+      <p class="band-num"><span class="count" data-count="80">0</span>–<span class="count" data-count="90">0</span>%</p>
+      <p class="band-label">ACT success on 6 fine-manipulation tasks from ~10 min of demos</p>
+    </div>
+    <div class="band-item">
+      <p class="band-num">+<span class="count" data-count="46.9" data-decimals="1">0</span>%</p>
+      <p class="band-label">Diffusion Policy's average gain over prior state of the art, 12 tasks</p>
+    </div>
+    <div class="band-item">
+      <p class="band-num"><span class="count" data-count="76.8" data-decimals="1">0</span>%</p>
+      <p class="band-label">GR00T N1 2B benchmark average (vendor-reported, NVIDIA)</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 WHAT WE LEARNT ============ -->
+<section class="section" id="learnt">
+  <div class="section-head" data-reveal>
+    <p class="section-no">02</p>
+    <h2 class="section-title">What <em>we learnt</em></h2>
+  </div>
+
+  <div class="learn-grid">
+    <div class="card learn" data-reveal style="--i:0">
+      <h4>Data quality beats model cleverness</h4>
+      <p>Every method we read is only as good as its demonstrations. Imitation-learning errors compound over time, so auditing and cleaning the dataset is not a chore around the project — it <em>is</em> the project.</p>
+    </div>
+    <div class="card learn" data-reveal style="--i:1">
+      <h4>Chunking is the cheap fix for drift</h4>
+      <p>ACT's core trick — predicting a short sequence of actions at once — directly attacks compounding error, and it trains in hours on one GPU. Good enough to be our baseline.</p>
+    </div>
+    <div class="card learn" data-reveal style="--i:2">
+      <h4>Diffusion handles "there's more than one right move"</h4>
+      <p>When demos contain several valid strategies, a plain regression policy averages them into a bad one. Diffusion Policy models the whole distribution instead, at the price of slower inference.</p>
+    </div>
+    <div class="card learn" data-reveal style="--i:3">
+      <h4>Foundation models are a later problem</h4>
+      <p>GR00T shows where the field is heading — one generalist model, post-trained per robot — but its compute cost makes it a poor first step for a student arm. Revisit once a baseline works.</p>
+    </div>
+    <div class="card learn" data-reveal style="--i:4">
+      <h4>Plain RGB is a legitimate starting point</h4>
+      <p>ALOHA reaches 80–90% success using commodity webcams with no depth sensor. Depth adds geometric information but also hardware, sync and calibration overhead — a trade-off to test, not assume.</p>
+    </div>
+    <div class="card learn" data-reveal style="--i:5">
+      <h4>Tooling exists — don't build it</h4>
+      <p>Hugging Face LeRobot ships dataset formats, training scripts and ACT out of the box. Our pipeline should build on it rather than reinvent it.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 03 IDEATION & DEVELOPMENT ============ -->
+<section class="section" id="ideation">
+  <div class="section-head" data-reveal>
+    <p class="section-no">03</p>
+    <h2 class="section-title">Ideation <em>&amp; development</em></h2>
+  </div>
+
+  <div class="roadmap">
+    <div class="road-item card" data-reveal style="--i:0">
+      <p class="road-no">Step 1</p>
+      <h4>Dataset auditing</h4>
+      <p>Watch every recorded episode, flag failures and out-of-distribution moments, and keep a manifest of what each episode contains. Decide acceptance criteria before collecting more.</p>
+    </div>
+    <div class="road-item card" data-reveal style="--i:1">
+      <p class="road-no">Step 2</p>
+      <h4>Trajectory cleaning &amp; smoothing</h4>
+      <p>Remove jitter and teleoperation noise from joint trajectories (e.g. low-pass filtering), fix timestamps and dropped frames so the policy learns smooth motion.</p>
+    </div>
+    <div class="road-item card" data-reveal style="--i:2">
+      <p class="road-no">Step 3</p>
+      <h4>Cleaning &amp; purging data</h4>
+      <p>Delete corrupted or failed episodes, deduplicate near-identical segments, and rebalance the dataset so the policy doesn't overfit one behaviour.</p>
+    </div>
+    <div class="road-item card" data-reveal style="--i:3">
+      <p class="road-no">Step 4</p>
+      <h4>Camera: RGB vs RGB&#8209;D</h4>
+      <p>Benchmark both. Start RGB-only (matching ACT/ALOHA); add depth if tasks need geometry that colour alone can't give, weighing the extra calibration and sync work.</p>
+    </div>
+  </div>
+
+  <div class="next card" data-reveal>
+    <h4>Up next</h4>
+    <p>Finish the ACT vs Diffusion vs GR00T comparison (D2 research slot, 2:00–2:30pm), then run a small LeRobot ACT training on the cleaned dataset as the first end-to-end test of the pipeline.</p>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <p class="footer-name">NERO</p>
+  <p>RDP 2026 &middot; AI data pipeline for a robotic arm &middot; research log started 11 Nov 2026</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
