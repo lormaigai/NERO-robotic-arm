@@ -51,7 +51,7 @@
     <div class="learn-grid">
       <div class="card learn" data-reveal style="--i:0">
         <h4>Data quality keeps coming up</h4>
-        <p>Across the papers, results track the quality of the demonstrations. Imitation-learning errors compound over time<a class="cite" href="research.html#ref-2">[2]</a>, which is why auditing and cleaning the dataset is a core stage of our planned pipeline, not an afterthought.</p>
+        <p>In the ALOHA paper, results track the quality of the demonstrations.<a class="cite" href="research.html#ref-2">[2]</a> Imitation-learning errors compound over time<a class="cite" href="research.html#ref-2">[2]</a>, which is why auditing and cleaning the dataset is a core stage of our planned pipeline, not an afterthought.</p>
       </div>
       <div class="card learn" data-reveal style="--i:1">
         <h4>Chunking targets drift</h4>
@@ -63,11 +63,11 @@
       </div>
       <div class="card learn" data-reveal style="--i:3">
         <h4>Foundation models as a later step</h4>
-        <p>GR00T shows where the field is heading: one generalist model, post-trained per robot<a class="cite" href="research.html#ref-5">[5]</a>. At 2B+ parameters it is far heavier than ACT<a class="cite" href="research.html#ref-5">[5]</a>. One proposal: revisit it only after a smaller baseline is working.</p>
+        <p>GR00T shows where the field is heading: one generalist model, post-trained per robot<a class="cite" href="research.html#ref-5">[5]</a>. At 2B+ parameters it is far heavier than ACT's ~80M<a class="cite" href="research.html#ref-5">[5]</a><a class="cite" href="research.html#ref-3">[3]</a>. One proposal: revisit it only after a smaller baseline is working.</p>
       </div>
       <div class="card learn" data-reveal style="--i:4">
         <h4>Plain RGB is a legitimate starting point</h4>
-        <p>ALOHA reaches its reported results with commodity webcams and no depth sensor.<a class="cite" href="research.html#ref-2">[2]</a> Depth adds geometric information but also hardware, sync and calibration overhead. A trade-off for us to test, not assume.</p>
+        <p>ALOHA reaches its reported results with commodity webcams and no depth sensor.<a class="cite" href="research.html#ref-2">[2]</a> For our setup, depth would add geometric information but also extra hardware, sync and calibration work - a trade-off for us to test, not assume.</p>
       </div>
       <div class="card learn" data-reveal style="--i:5">
         <h4>Existing tooling: LeRobot</h4>
