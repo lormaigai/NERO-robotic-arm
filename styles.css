@@ -784,3 +784,6 @@ html { overflow-x: clip; }
 .cite:hover { text-decoration: underline; }
 .refs li { scroll-margin-top: 90px; }
 .refs li:target { border-color: var(--blue); box-shadow: 0 8px 24px rgba(69, 83, 140, 0.16); }
+
+/* long one-word titles (Safety acknowledgement): keep within small screens */
+.page-title-sm { font-size: clamp(28px, 8.5vw, 68px); }
