@@ -475,7 +475,7 @@ main.sub .log-entry { margin-top: 16px; }
 }
 .refs li:hover { transform: translateX(6px); box-shadow: 0 8px 24px rgba(69, 83, 140, 0.12); }
 .refs li::before {
-  content: counter(ref, decimal-leading-zero);
+  content: "[" counter(ref) "]";
   font-family: var(--serif);
   font-style: italic;
   font-size: 18px;
@@ -767,3 +767,20 @@ html { overflow-x: clip; }
   font-family: inherit;
   font-size: inherit;
 }
+
+/* bracketed citations */
+.cite {
+  font-style: normal;
+  font-family: var(--sans);
+  font-size: 0.72em;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--blue);
+  text-decoration: none;
+  vertical-align: super;
+  padding: 0 1px;
+  white-space: nowrap;
+}
+.cite:hover { text-decoration: underline; }
+.refs li { scroll-margin-top: 90px; }
+.refs li:target { border-color: var(--blue); box-shadow: 0 8px 24px rgba(69, 83, 140, 0.16); }

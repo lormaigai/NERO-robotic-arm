@@ -67,11 +67,11 @@
         <h4 class="policy-name">ACT</h4>
         <p class="policy-origin">Action Chunking with Transformers. Zhao, Kumar, Levine, Finn (2023), from the ALOHA low-cost bimanual system.</p>
         <ul>
-          <li>Predicts a <em>chunk</em> of the next k joint actions at once instead of one step at a time, which fights the compounding-error problem of imitation learning.</li>
-          <li>Transformer over ResNet-18 camera features plus joint positions, with a latent style variable (CVAE).</li>
-          <li>Around 80M parameters; the LeRobot docs describe training in a few hours on a single GPU and high success rates from about 50 demonstrations.</li>
-          <li>In the ALOHA paper: 80 to 90% success on 6 fine tasks (such as slotting a battery or opening a cup) from about 10 minutes of demos.</li>
-          <li>First-class support in Hugging Face LeRobot, which recommends it as a starting point.</li>
+          <li>Predicts a <em>chunk</em> of the next k joint actions at once instead of one step at a time, which fights the compounding-error problem of imitation learning.<a class="cite" href="#ref-2">[2]</a></li>
+          <li>Transformer over ResNet-18 camera features plus joint positions, with a latent style variable (CVAE).<a class="cite" href="#ref-2">[2]</a><a class="cite" href="#ref-3">[3]</a></li>
+          <li>Around 80M parameters; the LeRobot docs describe training in a few hours on a single GPU and high success rates from about 50 demonstrations.<a class="cite" href="#ref-3">[3]</a></li>
+          <li>In the ALOHA paper: 80 to 90% success on 6 fine tasks (such as slotting a battery or opening a cup) from about 10 minutes of demos.<a class="cite" href="#ref-2">[2]</a></li>
+          <li>First-class support in Hugging Face LeRobot, which recommends it as a starting point.<a class="cite" href="#ref-3">[3]</a></li>
         </ul>
         <a class="policy-link" href="https://arxiv.org/abs/2304.13705" target="_blank" rel="noopener">Paper &nearr;</a>
       </article>
@@ -81,11 +81,11 @@
         <h4 class="policy-name">Diffusion Policy</h4>
         <p class="policy-origin">Chi, Xu, Feng et al. (2023). The visuomotor policy as a conditional denoising diffusion process.</p>
         <ul>
-          <li>Instead of outputting one action, it <em>refines noise into an action sequence</em> over several denoising steps, conditioned on camera images.</li>
-          <li>Handles multimodal demonstrations (several valid ways to do a task) that break plain regression policies.</li>
-          <li>Receding-horizon control: re-plans every step while keeping the motion temporally consistent.</li>
-          <li>In its own benchmarks: an average improvement of 46.9% over prior state of the art across 12 tasks in 4 benchmark suites.</li>
-          <li>Uses iterative denoising at inference time rather than a single forward pass.</li>
+          <li>Instead of outputting one action, it <em>refines noise into an action sequence</em> over several denoising steps, conditioned on camera images.<a class="cite" href="#ref-4">[4]</a></li>
+          <li>Handles multimodal demonstrations (several valid ways to do a task) that break plain regression policies.<a class="cite" href="#ref-4">[4]</a></li>
+          <li>Receding-horizon control: re-plans every step while keeping the motion temporally consistent.<a class="cite" href="#ref-4">[4]</a></li>
+          <li>In its own benchmarks: an average improvement of 46.9% over prior state of the art across 15 tasks in 4 benchmark suites.<a class="cite" href="#ref-4">[4]</a></li>
+          <li>Uses iterative denoising at inference time rather than a single forward pass.<a class="cite" href="#ref-4">[4]</a></li>
         </ul>
         <a class="policy-link" href="https://arxiv.org/abs/2303.04137" target="_blank" rel="noopener">Paper &nearr;</a>
       </article>
@@ -95,11 +95,11 @@
         <h4 class="policy-name">GR00T</h4>
         <p class="policy-origin">NVIDIA Isaac GR00T N1 (2025), an open foundation model for generalist humanoid robots.</p>
         <ul>
-          <li>Dual-system design: a vision-language model (System 2) reasons about the scene and instruction; a diffusion transformer (System 1) turns the plan into continuous actions.</li>
-          <li>Cross-embodiment: one set of weights adapts to different robots through post-training on your own demos.</li>
-          <li>Trained on a large humanoid dataset plus synthetic and internet-video data; part of the dataset is open on Hugging Face.</li>
-          <li>NVIDIA reports GR00T N1 2B averaging 76.8% on its own benchmark suite (vendor-reported; different tasks from the other two papers).</li>
-          <li>2B+ parameters, far larger than ACT's ~80M, so running or fine-tuning it needs correspondingly more compute.</li>
+          <li>Dual-system design: a vision-language model (System 2) reasons about the scene and instruction; a diffusion transformer (System 1) turns the plan into continuous actions.<a class="cite" href="#ref-5">[5]</a></li>
+          <li>Cross-embodiment: one set of weights adapts to different robots through post-training on your own demos.<a class="cite" href="#ref-5">[5]</a></li>
+          <li>Trained on a large humanoid dataset plus synthetic and internet-video data; part of the dataset is open on Hugging Face.<a class="cite" href="#ref-5">[5]</a></li>
+          <li>NVIDIA reports GR00T N1 2B averaging 76.8% on its own benchmark suite (vendor-reported; different tasks from the other two papers).<a class="cite" href="#ref-5">[5]</a></li>
+          <li>2B+ parameters, far larger than ACT's ~80M, so running or fine-tuning it needs correspondingly more compute.<a class="cite" href="#ref-5">[5]</a></li>
         </ul>
         <a class="policy-link" href="https://developer.nvidia.com/blog/accelerate-generalist-humanoid-robot-development-with-nvidia-isaac-gr00t-n1/" target="_blank" rel="noopener">Source &nearr;</a>
       </article>
@@ -111,23 +111,24 @@
           <tr><th></th><th>ACT</th><th>Diffusion Policy</th><th>GR00T N1</th></tr>
         </thead>
         <tbody>
-          <tr><td>Size</td><td>~80M params</td><td>Backbone-dependent</td><td>2B (NVIDIA)</td></tr>
-          <tr><td>Demos</td><td>~50 (LeRobot docs)</td><td>Not stated in our sources</td><td>Post-training set on top of pretraining</td></tr>
-          <tr><td>Training cost</td><td>A few hours, 1 GPU (LeRobot docs)</td><td>Not stated in our sources</td><td>Fine-tuning required; no cost figure in our sources</td></tr>
-          <tr><td>Inference</td><td>One forward pass per action chunk</td><td>Iterative denoising steps</td><td>VLM plus diffusion transformer</td></tr>
-          <tr><td>Evidence</td><td>80-90% on 6 ALOHA tasks</td><td>+46.9% avg on its 12-task suite</td><td>76.8% avg on NVIDIA's suite (vendor-reported)</td></tr>
+          <tr><td>Size</td><td>~80M params<a class="cite" href="#ref-3">[3]</a></td><td>Backbone-dependent</td><td>2B (NVIDIA)<a class="cite" href="#ref-5">[5]</a></td></tr>
+          <tr><td>Demos</td><td>~50 (LeRobot docs)<a class="cite" href="#ref-3">[3]</a></td><td>Not stated in our sources</td><td>Post-training set on top of pretraining<a class="cite" href="#ref-5">[5]</a></td></tr>
+          <tr><td>Training cost</td><td>A few hours, 1 GPU (LeRobot docs)<a class="cite" href="#ref-3">[3]</a></td><td>Not stated in our sources</td><td>Fine-tuning required; no cost figure in our sources</td></tr>
+          <tr><td>Inference</td><td>One forward pass per action chunk<a class="cite" href="#ref-2">[2]</a></td><td>Iterative denoising steps<a class="cite" href="#ref-4">[4]</a></td><td>VLM plus diffusion transformer<a class="cite" href="#ref-5">[5]</a></td></tr>
+          <tr><td>Evidence</td><td>80-90% on 6 ALOHA tasks<a class="cite" href="#ref-2">[2]</a></td><td>+46.9% avg on its 15-task suite<a class="cite" href="#ref-4">[4]</a></td><td>76.8% avg on NVIDIA's suite (vendor-reported)<a class="cite" href="#ref-5">[5]</a></td></tr>
         </tbody>
       </table>
       <p class="table-note">Each evidence number comes from that method's own paper or vendor, measured on different tasks and robots. Treat them as separate findings, not a ranking. Cells marked "not stated" are gaps to fill as the review continues.</p>
     </div>
 
     <h3 class="subhead" data-reveal>Research papers &amp; references</h3>
+    <p class="subhead-note" data-reveal>Bracketed numbers in the notes above point to these sources.</p>
     <ol class="refs">
-      <li data-reveal style="--i:0"><a href="https://chatgpt.com/share/6af40fcd-2818-83ec-a7f2-580ef4db9e45" target="_blank" rel="noopener">Team research thread (ChatGPT)</a><span>Working notes on the policy comparison.</span></li>
-      <li data-reveal style="--i:1"><a href="https://arxiv.org/pdf/2304.13705" target="_blank" rel="noopener">Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware</a><span>The ACT / ALOHA paper (arXiv:2304.13705).</span></li>
-      <li data-reveal style="--i:2"><a href="https://huggingface.co/docs/lerobot/main/en/act" target="_blank" rel="noopener">ACT in Hugging Face LeRobot</a><span>Docs: training and evaluation commands for ACT.</span></li>
-      <li data-reveal style="--i:3"><a href="https://arxiv.org/pdf/2303.04137" target="_blank" rel="noopener">Diffusion Policy: Visuomotor Policy Learning via Action Diffusion</a><span>arXiv:2303.04137.</span></li>
-      <li data-reveal style="--i:4"><a href="https://developer.nvidia.com/blog/accelerate-generalist-humanoid-robot-development-with-nvidia-isaac-gr00t-n1/" target="_blank" rel="noopener">NVIDIA Isaac GR00T N1 technical blog</a><span>Architecture and benchmark numbers for GR00T N1.</span></li>
+      <li id="ref-1" data-reveal style="--i:0"><a href="https://chatgpt.com/share/6af40fcd-2818-83ec-a7f2-580ef4db9e45" target="_blank" rel="noopener">Team research thread (ChatGPT)</a><span>Working notes on the policy comparison.</span></li>
+      <li id="ref-2" data-reveal style="--i:1"><a href="https://arxiv.org/pdf/2304.13705" target="_blank" rel="noopener">Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware</a><span>The ACT / ALOHA paper (arXiv:2304.13705).</span></li>
+      <li id="ref-3" data-reveal style="--i:2"><a href="https://huggingface.co/docs/lerobot/main/en/act" target="_blank" rel="noopener">ACT in Hugging Face LeRobot</a><span>Docs: training and evaluation commands for ACT.</span></li>
+      <li id="ref-4" data-reveal style="--i:3"><a href="https://arxiv.org/pdf/2303.04137" target="_blank" rel="noopener">Diffusion Policy: Visuomotor Policy Learning via Action Diffusion</a><span>arXiv:2303.04137.</span></li>
+      <li id="ref-5" data-reveal style="--i:4"><a href="https://developer.nvidia.com/blog/accelerate-generalist-humanoid-robot-development-with-nvidia-isaac-gr00t-n1/" target="_blank" rel="noopener">NVIDIA Isaac GR00T N1 technical blog</a><span>Architecture and benchmark numbers for GR00T N1.</span></li>
     </ol>
   </section>
 
