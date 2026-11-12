@@ -11,7 +11,7 @@
   --ink: #272c44;
   --ink-soft: #565d7e;
   --radius: 18px;
-  --serif: "Source Serif 4", Georgia, serif;
+  --serif: "Inter", -apple-system, sans-serif;
   --sans: "Inter", -apple-system, sans-serif;
 }
 
@@ -728,4 +728,42 @@ html { overflow-x: clip; }
   body { position: relative; }
   .nero-buddy { position: absolute; }
   .footer { padding-bottom: 120px; }
+}
+
+/* ---------- professional type pass (12 Nov) ----------
+   Upright, non-decorative typography throughout display text.
+   Original colours, layout and motion are unchanged. */
+.hero-title, .page-title, .section-title, .menu-links a,
+.page-link h3, .policy-name, .learn h4, .road-item h4, .next h4,
+.compare thead th, .log-date, .band-num, .footer-name, .refs a, .nav-brand {
+  font-style: normal;
+}
+.hero-title { font-weight: 700; letter-spacing: -0.02em; }
+.page-title { font-weight: 700; letter-spacing: -0.02em; }
+.section-title { font-weight: 600; letter-spacing: -0.02em; }
+.menu-links a { font-weight: 600; letter-spacing: -0.01em; }
+.page-link h3, .policy-name, .learn h4, .road-item h4, .next h4 { font-weight: 600; letter-spacing: -0.01em; }
+.compare thead th { font-weight: 600; }
+.log-date { font-weight: 600; letter-spacing: -0.01em; }
+.band-num { font-weight: 700; letter-spacing: -0.02em; }
+.footer-name { font-weight: 600; }
+.refs a { font-weight: 500; }
+.nav-brand { font-weight: 700; }
+
+/* no italic design accents anywhere */
+.hero-script, .section-no, .page-link-no, .pipeline-step,
+.refs li::before, .lab-item figcaption,
+.menu-links a em, .section-title em, .page-title em,
+.log-date em, .page-link h3 em, .marquee-track span {
+  font-style: normal;
+}
+.hero-script { font-weight: 500; letter-spacing: 0.01em; }
+.section-no, .page-link-no, .refs li::before { font-weight: 500; }
+.pipeline-step { font-weight: 500; }
+.lab-item figcaption { font-family: var(--sans); font-size: 13px; }
+
+/* prose emphasis stays semantic italic, same family/size as body */
+.overview-lede em, .policy li em, .learn p em {
+  font-family: inherit;
+  font-size: inherit;
 }
