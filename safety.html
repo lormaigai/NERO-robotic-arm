@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Safety acknowledgement · NERO</title>
+<meta name="description" content="NERO safety acknowledgement: the rules the team follows when operating the robotic arm.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="nav-brand" href="index.html">NERO</a>
+  <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="menu">
+    <span></span><span></span>
+  </button>
+</header>
+
+<div class="menu" id="menu" aria-hidden="true">
+  <nav class="menu-links">
+    <a href="index.html" style="--i:0">Home</a>
+    <a href="research.html" style="--i:1">Research <em>&amp; lit review</em></a>
+    <a href="learnt.html" style="--i:2">What <em>we learnt</em></a>
+    <a href="ideation.html" style="--i:3">Ideation <em>&amp; development</em></a>
+    <a href="safety.html" style="--i:4">Safety <em>acknowledgement</em></a>
+  </nav>
+  <p class="menu-foot">RDP 2026 &middot; project research log</p>
+</div>
+
+<header class="page-head stripes">
+  <p class="hero-overline" data-load="0">NERO &middot; RDP 2026</p>
+  <h1 class="page-title page-title-sm" data-load="1">Safety <em>acknowledgement</em></h1>
+  <p class="page-sub" data-load="2">The rules we follow when working with the arm, grouped by when each one applies.</p>
+</header>
+
+<main class="sub">
+
+  <section class="section" id="safety">
+    <h3 class="subhead" data-reveal>Before we operate</h3>
+    <div class="learn-grid">
+      <div class="card learn" data-reveal style="--i:0">
+        <h4>Risk assessment</h4>
+        <p>Ensure safety measures are established exactly as defined in the technical risk assessment.</p>
+      </div>
+      <div class="card learn" data-reveal style="--i:1">
+        <h4>Workspace setup</h4>
+        <p>Operate the arm in a clear, unobstructed area within your direct line of sight.</p>
+      </div>
+    </div>
+
+    <h3 class="subhead" data-reveal>While the arm is running</h3>
+    <div class="learn-grid">
+      <div class="card learn" data-reveal style="--i:0">
+        <h4>Emergency protocols</h4>
+        <p>Perform an emergency stop immediately if the host software displays an error message.</p>
+      </div>
+      <div class="card learn" data-reveal style="--i:1">
+        <h4>Payload limits</h4>
+        <p>Ensure the effective load never exceeds the maximum 3KG capacity during use.</p>
+      </div>
+      <div class="card learn" data-reveal style="--i:2">
+        <h4>Physical proximity</h4>
+        <p>Ensure individuals keep their heads, faces, and other body parts outside the arm's reach before starting and during operation.</p>
+      </div>
+    </div>
+
+    <h3 class="subhead" data-reveal>Looking after the hardware</h3>
+    <div class="learn-grid">
+      <div class="card learn" data-reveal style="--i:0">
+        <h4>Hardware integrity</h4>
+        <p>Do not modify the robotic arm, as modifications can create unpredictable hazards for integrators.</p>
+      </div>
+      <div class="card learn" data-reveal style="--i:1">
+        <h4>Environmental limits</h4>
+        <p>Do not expose the robotic arm to permanent magnetic fields, which can damage the system.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p class="footer-name">NERO</p>
+  <p>RDP 2026 &middot; AI data pipeline for a robotic arm &middot; research log started 11 Nov 2026</p>
+</footer>
+
+<div class="nero-buddy" aria-hidden="true">
+<svg viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg">
+  <circle class="buddy-badge" cx="60" cy="72" r="56"/>
+  <rect class="buddy-base" x="38" y="110" width="44" height="12" rx="6"/>
+  <g class="buddy-lower">
+    <rect class="buddy-seg1" x="54" y="64" width="12" height="48" rx="6"/>
+    <circle class="buddy-joint" cx="60" cy="106" r="7"/>
+    <circle class="buddy-eye" cx="60" cy="106" r="2.4"/>
+    <g class="buddy-upper">
+      <rect class="buddy-seg2" x="54" y="28" width="12" height="42" rx="6"/>
+      <circle class="buddy-accent" cx="60" cy="64" r="4"/>
+      <g class="buddy-claw-l"><rect class="buddy-claw" x="51" y="14" width="6" height="16" rx="3"/></g>
+      <g class="buddy-claw-r"><rect class="buddy-claw" x="63" y="14" width="6" height="16" rx="3"/></g>
+      <circle class="buddy-joint2" cx="60" cy="28" r="5"/>
+    </g>
+  </g>
+</svg>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
