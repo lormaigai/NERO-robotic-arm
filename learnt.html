@@ -77,6 +77,50 @@
     </div>
   </section>
 
+  <section class="section" id="learnt-env">
+    <h3 class="subhead" data-reveal>Also on day 2: environment variables</h3>
+    <p class="section-note" data-reveal>This session we worked on Antigravity in Obsidian, learning about environment variables and researching how they could apply to our pipeline. The full write-up document is still in progress (about halfway) - we'll link it here once it's finished. The cards below are our to-learn list from the session, written up simply so the whole team can follow.</p>
+
+    <div class="learn-grid">
+      <div class="card learn" data-reveal style="--i:0">
+        <h4>What an environment variable is</h4>
+        <p>A named setting that lives outside the code; the program reads it as it runs. The twelve-factor app guide defines config as everything likely to change between deploys - credentials, resource locations - and says to store that config in env vars.<a class="cite" href="research.html#ref-6">[6]</a> Because the value sits outside the code, behaviour can change without editing the code itself.<a class="cite" href="research.html#ref-6">[6]</a></p>
+      </div>
+      <div class="card learn" data-reveal style="--i:1">
+        <h4>Env vars are not environments</h4>
+        <p>Two ideas that sound the same. An <em>environment</em> is where the software runs - a laptop, a test server, the computer on the arm.<a class="cite" href="research.html#ref-7">[7]</a> An <em>environment variable</em> is one setting inside that environment. The same code can behave differently in each environment purely because the variables differ.<a class="cite" href="research.html#ref-6">[6]</a></p>
+      </div>
+      <div class="card learn" data-reveal style="--i:2">
+        <h4>The main types of environment</h4>
+        <p><strong>Local</strong>: your own machine while you build. <strong>Development</strong>: the sandbox where changes are tried out. <strong>Testing</strong>: where new code gets checked before release. <strong>Staging</strong>: a mirror of production for a final rehearsal. <strong>Production (live)</strong>: the real thing that end users - or in our case the robot - actually run on.<a class="cite" href="research.html#ref-7">[7]</a> <em>Hosted</em> means it runs on a server somewhere else; <em>local</em> means it's on the machine in front of you.<a class="cite" href="research.html#ref-7">[7]</a></p>
+      </div>
+      <div class="card learn" data-reveal style="--i:3">
+        <h4>Why environments matter for NERO</h4>
+        <p>Our pipeline could end up running in more than one place - for example a training laptop and a computer driving the arm. Settings like dataset paths, camera device names or API keys could differ between them, and env vars would hold those differences so the code itself stays identical.<a class="cite" href="research.html#ref-6">[6]</a> They also keep secrets out of the repo - env vars are much less likely to be committed by accident than a config file.<a class="cite" href="research.html#ref-6">[6]</a></p>
+      </div>
+      <div class="card learn" data-reveal style="--i:4">
+        <h4>Open question: what's in NERO's environment?</h4>
+        <p>We haven't yet confirmed what was actually added into the environment of the robotic arm - which variables exist on its machine and what they contain. Question to take back to the team: what was added, and why those particular ones?</p>
+      </div>
+    </div>
+
+    <h3 class="subhead" data-reveal>Key concepts: chunking &amp; temporal ensemble</h3>
+    <div class="learn-grid">
+      <div class="card learn" data-reveal style="--i:0">
+        <h4>Chunking</h4>
+        <p>Instead of predicting the arm's next single move, ACT predicts a <em>chunk</em>: the next k moves at once. That shrinks the task's effective length k-fold, which fights compounding errors - small mistakes snowballing over time.<a class="cite" href="research.html#ref-2">[2]</a></p>
+      </div>
+      <div class="card learn" data-reveal style="--i:1">
+        <h4>Where chunking comes from</h4>
+        <p>The idea is borrowed from neuroscience, where "chunking" describes individual actions being grouped together and executed as one unit - like "grasp the corner of the wrapper" as one move instead of many tiny ones. ACT applies the same idea to robot policies.<a class="cite" href="research.html#ref-2">[2]</a></p>
+      </div>
+      <div class="card learn" data-reveal style="--i:2">
+        <h4>Temporal ensemble</h4>
+        <p>A plain chunker only looks at the cameras every k steps, which can make motion jerky. ACT's fix is to query the policy every timestep so the chunks overlap, then average the overlapping predictions with an exponential weighting scheme. The motion comes out smoother, with no extra training - just a little extra compute at run time.<a class="cite" href="research.html#ref-2">[2]</a></p>
+      </div>
+    </div>
+  </section>
+
   </div></div>
 </details>
 
