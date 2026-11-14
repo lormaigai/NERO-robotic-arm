@@ -787,3 +787,33 @@ html { overflow-x: clip; }
 
 /* long one-word titles (Safety acknowledgement): keep within small screens */
 .page-title-sm { font-size: clamp(28px, 8.5vw, 68px); }
+
+/* Day 3 document, set natively on the page */
+.day3-doc { max-width: 760px; margin: 8px auto 0; font-size: 14.5px; line-height: 1.65; }
+.day3-doc p { margin: 10px 0; }
+.day3-doc .doc-h { font-size: 21px; font-weight: 500; letter-spacing: -.01em; margin: 38px 0 14px; }
+.day3-doc .doc-h:first-child { margin-top: 10px; }
+.day3-doc .doc-h-small { font-size: 17px; }
+.day3-doc .doc-sub { font-size: 15px; font-weight: 700; margin: 26px 0 10px; }
+.day3-doc ul, .day3-doc ol { margin: 8px 0 14px; padding-left: 26px; }
+.day3-doc li { margin: 6px 0; }
+.day3-doc ul ul, .day3-doc ul ol, .day3-doc ol ul, .day3-doc ol ol { margin: 6px 0; }
+.day3-doc .doc-dash { list-style: none; }
+.day3-doc .doc-dash > li { position: relative; }
+.day3-doc .doc-dash > li::before { content: "-"; position: absolute; left: -18px; color: var(--ink-soft); }
+.day3-doc .doc-disc { list-style: disc; }
+.day3-doc .doc-circle { list-style: circle; }
+.day3-doc .doc-dec { list-style: decimal; }
+.day3-doc .doc-dec > li { margin: 16px 0; }
+.day3-doc .doc-roman { list-style: lower-roman; }
+.day3-doc .doc-eq { display: block; margin: 14px 0; max-width: 100%; height: auto; border-radius: 6px; }
+.day3-doc .doc-shot { margin: 22px 0; }
+.day3-doc .doc-shot img { display: block; width: 100%; height: auto; border: 1px solid rgba(107,124,184,.2); border-radius: 8px; }
+.day3-doc code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .92em; color: #1f8a70; background: rgba(31,138,112,.09); padding: 1px 5px; border-radius: 4px; }
+.day3-doc .doc-under { display: inline-block; text-align: center; vertical-align: middle; line-height: 1.25; margin: 0 1px; }
+.day3-doc .doc-over { display: block; }
+.day3-doc .doc-above, .day3-doc .doc-below { display: block; font-size: .72em; }
+@media (max-width: 640px) {
+  .day3-doc { font-size: 14px; }
+  .day3-doc .doc-h { font-size: 18.5px; }
+}
