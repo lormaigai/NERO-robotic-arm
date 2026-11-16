@@ -306,6 +306,82 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 </div>
 </section></div></div></details>
 
+<details class="log-entry" id="day-2026-11-16" open>
+<summary class="log-toggle" data-reveal><span class="log-date">16 <em>Nov</em> 2026</span><span class="log-tags"><span>D4</span><span>Deployment report</span></span><svg class="log-chevron" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+<div class="log-body"><div class="log-inner"><section class="section"><h3 class="subhead" data-reveal>Breakthrough: natural-language prompt to a moving arm</h3>
+<p class="section-note" data-reveal>Team update: we managed to use AI to bring our vision of a natural-language prompt to the robot arm moving. Below is our deployment and optimization report, in the team's own words. These are our reported observations and settings from running the arm. No success rate has been measured or independently verified yet, and this page does not claim one.</p>
+<div class="day3-doc day4-doc">
+<h4 class="doc-h">Nero Robot Arm Deployment &amp; Optimization Report</h4>
+<h5 class="doc-sub">1. Objective</h5>
+<p>Deploy a trained ACT policy (<code>act_nero_conveyor_sort_curated</code>) to a Nero robot arm to perform a pick-and-place task with high stability and precision.</p>
+
+<h5 class="doc-sub">2. Problem Diagnosis &amp; Iterative Fixes</h5>
+<p><strong>Phase 1: Control Loop Stability</strong></p>
+<ul class="doc-dash">
+<li><strong>Issue:</strong> Robot exhibited violent spasms and "snapping" behavior.</li>
+<li><strong>Root Cause:</strong> Control loop frequency was running at \( \sim 3\ \mathrm{Hz} \), far below the target \( 30\ \mathrm{Hz} \), causing sparse setpoint jumps.</li>
+<li><strong>Fix:</strong> Optimized execution environment and ran the rollout process in the background, increasing effective loop frequency to \( \sim 25\ \mathrm{Hz} \).</li>
+</ul>
+
+<p><strong>Phase 2: High-Frequency Jitter (Policy Noise)</strong></p>
+<ul class="doc-dash">
+<li><strong>Issue:</strong> Even at low speeds (\( 5\% \)), the arm suffered from high-frequency vibration ("table shaking").</li>
+<li><strong>Root Cause:</strong> Policy noise producing "jagged" predicted trajectories that resonated with the hardware.</li>
+<li><strong>Fix:</strong> Implemented an Exponential Moving Average (EMA) Smoothing Filter in the <code>RobotWrapper</code>.</li>
+<li><strong>Formula:</strong></li>
+</ul>
+<p class="doc-eq doc-eq-math">\[ S_t = \alpha \cdot X_t + (1 - \alpha) \cdot S_{t-1} \]</p>
+<ul class="doc-dash">
+<li>(with \( \alpha = 0.2 \)).</li>
+<li><strong>Result:</strong> Dampened high-frequency noise and produced fluid motion.</li>
+</ul>
+
+<p><strong>Phase 3: Reach &amp; Grasp Precision</strong></p>
+<ul class="doc-dash">
+<li><strong>Issue:</strong> Robot almost reached the object but missed due to insufficient depth and the claw not opening wide enough.</li>
+<li><strong>Fixes:</strong>
+<ul class="doc-dash">
+<li><strong>Z-Depth Correction:</strong> Added a calibrated offset to the arm joints to force a deeper descent into the workspace.</li>
+<li><strong>Gripper Boost:</strong> Overrode the policy's gripper commands to force the claw to a full open state (\( 1.57\ \mathrm{rad} \)).</li>
+<li><strong>Grip Timing:</strong> Implemented a Hold-Open Latch (\( 15 \) frames), preventing the claw from closing until the arm has fully settled at the target.</li>
+<li><strong>State-Aware Control:</strong> Added a <code>has_grasped</code> flag to distinguish between the Approach phase (forced open) and the Transport phase (policy-controlled).</li>
+</ul>
+</li>
+</ul>
+
+<p><strong>Phase 4: Safety &amp; Object Discrimination</strong></p>
+<ul class="doc-dash">
+<li><strong>Issue:</strong> Requirement to avoid red cubes entirely and only interact with orange cubes.</li>
+<li><strong>Fix:</strong> Since the policy is a black box, a Manual Safety Interlock was implemented in the controller.
+<ul class="doc-dash">
+<li><strong>Safety Lock:</strong> A boolean <code>_locked</code> flag that completely blocks all motor commands.</li>
+<li><strong>Observation Mode:</strong> A mode that allows the arm to move but locks the gripper wide open.</li>
+<li><strong>Protocol:</strong> Robot remains locked by default \( \rightarrow \) User manually unlocks for specific targets (e.g., Orange Cube).</li>
+</ul>
+</li>
+</ul>
+<p class="doc-note">Note: the red/orange separation here is done by a person manually unlocking the arm for a chosen target. The arm is not telling the cube colors apart on its own.</p>
+
+<h5 class="doc-sub">3. Final Control Architecture</h5>
+<p>The current system operates as a layered controller:</p>
+<p class="day4-flow">AI Policy (ACT) \( \rightarrow \) EMA Smoothing \( \rightarrow \) Depth/Precision Offsets \( \rightarrow \) Gripper Logic (Boost/Hold/State) \( \rightarrow \) Safety Lock \( \rightarrow \) Hardware</p>
+
+<p><strong>Summary of Active Overrides</strong></p>
+<div class="day4-table-wrap"><table class="day4-table">
+<thead><tr><th>Feature</th><th>Value/Logic</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td>EMA Alpha</td><td>\( 0.2 \)</td><td>Eliminate jitter</td></tr>
+<tr><td>Z-Offset</td><td>\( \pm 0.1\ \mathrm{rad} \)</td><td>Ensure depth reach</td></tr>
+<tr><td>Gripper Width</td><td>\( 1.57\ \mathrm{rad} \)</td><td>Ensure full open</td></tr>
+<tr><td>Hold Timer</td><td>\( 15 \) frames</td><td>Prevent premature closure</td></tr>
+<tr><td>Safety Lock</td><td>True (Default)</td><td>Prevent unplanned movement</td></tr>
+</tbody></table></div>
+
+<h5 class="doc-sub">4. Final Result</h5>
+<p>The robot transitioned from violent spasms to a stable, smooth, and precise pick-and-place system with a verifiable safety interlock to prevent accidental interaction with restricted objects.</p>
+</div>
+</section></div></div></details>
+
 </main>
 
 <footer class="footer">

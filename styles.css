@@ -822,3 +822,11 @@ html { overflow-x: clip; }
 .day3-doc .doc-eq-math { text-align: center; font-size: 1.08rem; padding: 6px 0; overflow-x: auto; overflow-y: hidden; }
 .day3-doc .doc-note { font-size: 0.92rem; opacity: 0.8; margin: 4px 0 12px; }
 @media (max-width: 640px) { .day3-doc .doc-eq-math { font-size: 0.66rem; } }
+
+/* Day 4 deployment report table */
+.day4-table-wrap { overflow-x: auto; margin: 8px 0 16px; }
+.day4-table { border-collapse: collapse; width: 100%; font-size: 0.95rem; }
+.day4-table th, .day4-table td { border: 1px solid rgba(0,0,0,0.15); padding: 8px 12px; text-align: left; vertical-align: top; }
+.day4-table th { font-weight: 600; background: rgba(0,0,0,0.04); }
+@media (max-width: 640px) { .day4-table { font-size: 0.85rem; } .day4-table th, .day4-table td { padding: 6px 8px; } }
+.day4-doc .day4-flow { font-weight: 600; line-height: 1.8; }
