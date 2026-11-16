@@ -381,7 +381,83 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 <h5 class="doc-sub">4. Final Result</h5>
 <p>The robot transitioned from violent spasms to a stable, smooth, and precise pick-and-place system with a verifiable safety interlock to prevent accidental interaction with restricted objects.</p>
 </div>
-</section></div></div></details>
+</section>
+<section class="section" id="day4-data-curation">
+<h3 class="subhead" data-reveal>Data curation: quality and diversity</h3>
+<p class="subhead-note" data-reveal>Day 4 &middot; Monday, 16 November 2026. Notes from our data-curation methodology, coreset output and ACT training-run screenshots. These complement the deployment observations. The screenshots show a curated dataset and a training run in progress, not a completed evaluation or a measured improvement in task success.</p>
+<div class="day3-doc day4-doc">
+<h4 class="doc-h">The core principle: Quality-Diversity (QD) selection</h4>
+<p>Rather than keep only the highest-scoring demonstrations overall, the proposed method balances execution quality with coverage of different task conditions.</p>
+<p class="day4-flow">Filtered candidate pool (cleaned episodes) &rarr; quality scoring and coverage bins &rarr; stratified top-K selection within each bin &rarr; training coreset</p>
+
+<h5 class="doc-sub">1. Score each demonstration by execution quality</h5>
+<p>The methodology assigns each valid episode a quality score \(Q\in[0,1]\), combining path directness, movement smoothness and grasp decisiveness.</p>
+<ul class="doc-dash">
+<li><strong>Path directness / tortuosity:</strong> compare total joint-space travel with the start-to-end distance. Lower tortuosity means less wandering. The notes use approximately 1.0&ndash;1.3 as a low-tortuosity example and values above 2.0 as a possible sign of detours or hesitation.</li>
+</ul>
+<p class="doc-eq doc-eq-math">\[\tau=\frac{\sum_{t=1}^{T-1}\lVert q_{t+1}-q_t\rVert_2}{\lVert q_T-q_1\rVert_2},\qquad S_{\mathrm{path}}=\exp[-(\tau-1)]\]</p>
+<ul class="doc-dash">
+<li><strong>Movement smoothness:</strong> the notes discuss spectral arc length (SPARC) or jerk. Their displayed jerk-based score is \(S_{\mathrm{smooth}}=1-J_{\mathrm{episode}}/J_{\max}\), where \(J\) is mean squared jerk.</li>
+<li><strong>Grasp decisiveness:</strong> one closure followed by a held grasp scores 1.0 in the example; opening, closing, adjusting and closing again (&ldquo;gripper hunt&rdquo;) scores 0.3.</li>
+</ul>
+<p class="doc-eq doc-eq-math">\[Q(E)=0.4S_{\mathrm{path}}+0.3S_{\mathrm{smooth}}+0.3S_{\mathrm{grasp}}\]</p>
+<p class="doc-note">These are the proposed scoring rules shown in the methodology notes. The screenshots do not show the scoring implementation or its handling of edge cases, such as zero start-to-end displacement or normalization bounds.</p>
+
+<h5 class="doc-sub">2. Define coverage bins to retain diversity</h5>
+<ul class="doc-dash">
+<li><strong>Initial object position:</strong> divide the workspace into a spatial grid, for example a 3 &times; 3 grid of left/center/right and near/mid/far.</li>
+<li><strong>Visual conditions:</strong> extract features from the first RGB frame using a model such as DINOv2-small or ResNet-18, then cluster them with k-means (the examples use 3 or 5 clusters). The aim is to retain variation in lighting, table textures and distractors.</li>
+<li><strong>Approach angle / orientation:</strong> group demonstrations by object orientation or initial wrist angle, with 0&deg;, 45&deg; and 90&deg; as example conditions.</li>
+</ul>
+
+<h5 class="doc-sub">3. Select the top-K demonstrations within each bin</h5>
+<p>Choose a total episode budget \(B\). For \(G\) coverage bins, target roughly \(B/G\) episodes per bin. Within each bin, rank demonstrations by the composite quality score \(Q\) and keep the top \(K\).</p>
+<p>The aim is to avoid over-representing one easy or frequently recorded setup while retaining smooth, direct demonstrations from different conditions. Coverage depends on which bins contain valid demonstrations; the screenshots do not establish complete workspace coverage or an advantage over random sampling in an evaluation.</p>
+
+<h5 class="doc-sub">4. Consider single-operator consistency</h5>
+<p>The methodology recommends avoiding a mixture of different operators' trajectories within the same coverage bin, and preferring the operator whose demonstrations have lower mean tortuosity and smoother jerk. Its rationale is to reduce conflicting demonstration styles for ACT's CVAE. This is a proposed selection rule, not a comparison verified by the supplied training screenshot.</p>
+
+<h5 class="doc-sub">Glossary</h5>
+<div class="day4-table-wrap"><table class="day4-table">
+<thead><tr><th>Symbol</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td>\(B\)</td><td>Budget: total episodes wanted in the final training dataset.</td></tr>
+<tr><td>\(G\)</td><td>Groups / grid bins: the different scenarios or workspace zones.</td></tr>
+<tr><td>\(K\)</td><td>Items to keep: the number of demonstrations selected from each bin.</td></tr>
+<tr><td>\(Q\)</td><td>Quality score: how smooth, direct and decisive a demonstration is under the scoring rules.</td></tr>
+</tbody></table></div>
+
+<h5 class="doc-sub">Coreset output: 75% retained</h5>
+<p>The curation script reported the following selection:</p>
+<div class="day4-table-wrap"><table class="day4-table">
+<thead><tr><th>Metric</th><th>Reported value</th></tr></thead>
+<tbody>
+<tr><td>Evaluated episodes</td><td>160</td></tr>
+<tr><td>Kept episodes</td><td>120 (75%)</td></tr>
+<tr><td>Pruned outlier episodes</td><td>40</td></tr>
+<tr><td>Mean quality score, all episodes</td><td>43.5 / 100</td></tr>
+<tr><td>Mean quality score, kept episodes</td><td>44.2 / 100</td></tr>
+</tbody></table></div>
+<p>The selected episode specification was saved to <code>datasets/nero_conveyor_sort/curated_coreset.json</code>. The output provides the curated episode list for LeRobot's <code>--dataset.episodes</code> argument.</p>
+<p class="doc-note">The script output reports scores out of 100, while the methodology defines Q on a 0&ndash;1 scale. The screenshots do not show how the implementation maps between them or confirm that every proposed coverage/operator rule was applied. The score difference alone does not establish better robot performance.</p>
+
+<h5 class="doc-sub">ACT training run on the curated dataset</h5>
+<p>The terminal screenshot shows LeRobot creating the dataset, policy and optimizer, then starting offline ACT training in the <code>RDP2026Nov</code> project folder.</p>
+<div class="day4-table-wrap"><table class="day4-table">
+<thead><tr><th>Setting</th><th>Observed value</th></tr></thead>
+<tbody>
+<tr><td>Policy</td><td>ACT</td></tr>
+<tr><td>Dataset</td><td>120 episodes / 107,834 frames</td></tr>
+<tr><td>Configured training steps</td><td>60,000</td></tr>
+<tr><td>Effective batch size</td><td>4</td></tr>
+<tr><td>Vision backbone</td><td>ResNet-18</td></tr>
+<tr><td>Displayed learning rate</td><td>1 &times; 10<sup>&minus;5</sup></td></tr>
+<tr><td>Output directory</td><td><code>outputs/train/act_nero_conveyor_sort_curated</code></td></tr>
+</tbody></table></div>
+<p class="doc-note">The capture shows early training progress, not completion of all 60,000 steps. It does not include a held-out evaluation, a success rate, or a before/after task-performance comparison.</p>
+</div>
+</section>
+</div></div></details>
 
 </main>
 
