@@ -830,3 +830,6 @@ html { overflow-x: clip; }
 .day4-table th { font-weight: 600; background: rgba(0,0,0,0.04); }
 @media (max-width: 640px) { .day4-table { font-size: 0.85rem; } .day4-table th, .day4-table td { padding: 6px 8px; } }
 .day4-doc .day4-flow { font-weight: 600; line-height: 1.8; }
+.day4-entry .log-inner .section { padding-top: 28px; }
+.day4-entry .subhead { margin-bottom: 14px; }
+.day4-entry .subhead-note { margin: 0 0 24px; }
