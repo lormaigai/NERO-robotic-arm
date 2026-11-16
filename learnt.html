@@ -15,6 +15,7 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 <style>
 /* Day 4: a calmer reading layout, scoped to this entry. */
+.day4-entry, .day4-entry .section, .day4-entry .doc-sub { scroll-margin-top:100px; }
 .day4-entry .log-date { font-size: clamp(24px,4vw,38px); }
 .day4-entry .section > .subhead { max-width: 760px; margin: 12px auto 14px; font-size: clamp(23px,3vw,30px); font-weight: 600; line-height: 1.3; letter-spacing: -.025em; }
 .day4-entry .section > .subhead-note { max-width: 760px; margin: 0 auto 28px; font-size: 15px; line-height: 1.75; }
@@ -422,11 +423,11 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 </div>
 <p class="doc-note">Methodology notes transcribed from the supplied screenshots below. Their stated benefits and operator rules are proposed guidance, not results verified by the training run.</p>
 
-<h5 class="doc-sub">Step 1: Score Every Demonstration by Execution Quality (\(Q\))</h5>
+<h5 class="doc-sub" id="day4-quality-score">Step 1: Score Every Demonstration by Execution Quality (\(Q\))</h5>
 <p>Every valid episode receives a scalar <strong>Quality Score \(Q\in[0,1]\)</strong> combining three physical metrics:</p>
 <h6 class="doc-sub">1. Path Directness / Tortuosity (\(\tau\))</h6>
 <p>Measures how much the arm wandered versus taking a direct, confident trajectory:</p>
-<div class="doc-eq doc-eq-math">\[\tau=\frac{\text{Total Joint Arc Length}}{\text{End-to-End Distance}}=\frac{\sum_{t=1}^{T-1}\lVert q_{t+1}-q_t\rVert_2}{\lVert q_T-q_1\rVert_2}\]</div>
+<div class="doc-eq doc-eq-math">\[\begin{aligned}\tau&amp;=\frac{\text{Total Joint Arc Length}}{\text{End-to-End Distance}}\\[8pt]&amp;=\frac{\sum_{t=1}^{T-1}\lVert q_{t+1}-q_t\rVert_2}{\lVert q_T-q_1\rVert_2}\end{aligned}\]</div>
 <ul>
 <li><strong>Goal:</strong> Low \(\tau\) (\(\approx 1.0\text{–}1.3\)). High \(\tau&gt;2.0\) indicates the operator took a looping detour or hesitated.</li>
 <li>Normalized Score: \(S_{\mathrm{path}}=\exp\left(-(\tau-1)\right)\).</li>
