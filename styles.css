@@ -817,3 +817,8 @@ html { overflow-x: clip; }
   .day3-doc { font-size: 14px; }
   .day3-doc .doc-h { font-size: 18.5px; }
 }
+
+/* Rendered LaTeX math (MathJax) in the Day 3 document */
+.day3-doc .doc-eq-math { text-align: center; font-size: 1.08rem; padding: 6px 0; overflow-x: auto; overflow-y: hidden; }
+.day3-doc .doc-note { font-size: 0.92rem; opacity: 0.8; margin: 4px 0 12px; }
+@media (max-width: 640px) { .day3-doc .doc-eq-math { font-size: 0.66rem; } }
