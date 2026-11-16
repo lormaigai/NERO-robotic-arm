@@ -157,7 +157,37 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 <figure class="doc-shot"><img src="assets/day3-notes/shot-env-readby.png" alt="Screenshot from the original document: variables read by Python code and optional user-settable variables." width="946" height="535" loading="lazy"></figure>
 <figure class="doc-shot"><img src="assets/day3-notes/shot-datasets.png" alt="Screenshot from the original document: datasets table - 6 datasets, 400 episodes." width="946" height="581" loading="lazy"></figure>
 <figure class="doc-shot"><img src="assets/day3-notes/shot-pipeline.png" alt="Screenshot from the original document: pipeline flowchart." width="624" height="1046" loading="lazy"></figure>
-<figure class="doc-shot"><img src="assets/day3-notes/shot-jerk-method.png" alt="Screenshot from the original document: jerk method - originating method, principle and mathematical formulation." width="946" height="719" loading="lazy"></figure>
+<p><strong>Originating Method:</strong> <i>BridgeData V2</i> (Walke et al., CoRL 2023) &amp; <i>Open X-Embodiment</i> (Padalkar et al., ICRA 2024).</p>
+<h4 class="doc-h doc-h-small">The Principle</h4>
+<p>Jerk is the third time-derivative of position (rate of change of acceleration). High jerk indicates:</p>
+<ul class="doc-disc">
+<li>Teleoperation controller packet drops or latency hiccups.</li>
+<li>Operator hand tremor or sudden spastic corrections.</li>
+<li>Mechanical fighting or slipping.</li>
+</ul>
+<h4 class="doc-h doc-h-small">Specific Mathematical Formulation</h4>
+<p>For joint vector \( q_t \in \mathbb{R}^7 \) sampled at regular intervals \( \Delta t \):</p>
+<ol class="doc-dec">
+<li><strong>Discrete Jerk Approximation:</strong></li>
+</ol>
+<p class="doc-eq doc-eq-math">\[ J_t = \frac{\Delta^3 q_t}{\Delta t^3} = \frac{q_{t+2} - 3q_{t+1} + 3q_t - q_{t-1}}{\Delta t^3} \]</p>
+<ol class="doc-dec" start="2">
+<li><strong>Mean Episode Squared Jerk Metric (\( S_{\mathrm{jerk}} \)):</strong></li>
+</ol>
+<p class="doc-eq doc-eq-math">\[ S_{\mathrm{jerk}}(E) = \frac{1}{T} \sum_{t=1}^{T} \sum_{j=1}^{7} \left( J_{t,j} \right)^2 \]</p>
+<ol class="doc-dec" start="3">
+<li><strong>Filtering Threshold:</strong> Compute the population mean \( \mu_{\mathrm{jerk}} \) and standard deviation \( \sigma_{\mathrm{jerk}} \) across all episodes of the task.</li>
+</ol>
+<p class="doc-eq doc-eq-math">\[ \text{Flag Episode } E \text{ if } S_{\mathrm{jerk}}(E) > \mu_{\mathrm{jerk}} + 2\sigma_{\mathrm{jerk}} \quad \text{or} \quad S_{\mathrm{jerk}}(E) > P_{95} \]</p>
+<p>Any episode above the 95th percentile is flagged as an erratic trajectory.</p>
+<ol class="doc-dec" start="4">
+<li><strong>Butterworth Signal Smoothing (Optional Preprocessing):</strong> To filter human hand tremor without discarding the trajectory:
+<ul class="doc-disc">
+<li>Apply a <strong>4th-order zero-phase Butterworth low-pass filter</strong> ( <code>scipy.signal.filtfilt</code> ).</li>
+<li>Cutoff frequency: \( f_c = 4.0\text{--}5.0 \text{ Hz} \) (for a 30 Hz or 50 Hz recording stream). Human intentional arm movement is \( &lt; 3 \text{ Hz} \); tremor and CAN packet jitter are \( &gt; 8 \text{ Hz} \).</li>
+</ul>
+</li>
+</ol>
 
 <h4 class="doc-h doc-h-small">Our notes</h4>
 
@@ -169,7 +199,17 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 </ul>
 
 <h4 class="doc-h">Stage 2: cut out pauses</h4>
-<figure class="doc-shot"><img src="assets/day3-notes/shot-stage2-algo.png" alt="Screenshot from the original document: specific algorithm for cutting out pauses." width="946" height="317" loading="lazy"></figure>
+<h4 class="doc-h doc-h-small">Specific Algorithm</h4>
+<p>For each episode with joint positions \( q_t \in \mathbb{R}^D \) and sampling period \( \Delta t \):</p>
+<ol class="doc-dec">
+<li>Calculate the instantaneous \( L_2 \) joint velocity:</li>
+</ol>
+<p class="doc-eq doc-eq-math">\[ v_t = \frac{\| q_{t+1} - q_t \|_2}{\Delta t} \]</p>
+<ol class="doc-dec" start="2">
+<li>Set a stationary threshold \( \epsilon_v \) (for the 7-DOF Nero arm: \( \epsilon_v = 0.02 \text{ rad/s} \)).</li>
+<li><strong>Leading Trim:</strong> Find the first frame \( t_{\mathrm{start}} \) where velocity exceeds \( \epsilon_v \) for at least \( k = 5 \) consecutive frames:</li>
+</ol>
+<p class="doc-eq doc-eq-math">\[ t_{\mathrm{start}} = \min \left\{ t \mid \forall j \in [0, k-1],\; v_{t+j} > \epsilon_v \right\} \]</p>
 <ul class="doc-dash">
 <li><strong>Measuring Speed (<i>v</i><sub>t</sub>):</strong> The algorithm calculates the physical speed of the robot's joints at every fraction of a second.</li>
 <li><strong>The Movement Threshold (<i>&epsilon;</i><sub>v</sub>):</strong> It establishes a baseline speed limit eg 0.02 rad/s (not decided). Any movement slower than this is considered "sitting still" or just sensor static.</li>
@@ -256,7 +296,22 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 </ol>
 
 <h4 class="doc-h">Stage 5: Trajectory consistency and Multimodal Collapse Prevention</h4>
-<figure class="doc-shot"><img src="assets/day3-notes/shot-stage5-dtw.png" alt="Screenshot from the original document: Dynamic Time Warping medoid filtering algorithm." width="946" height="541" loading="lazy"></figure>
+<h4 class="doc-h doc-h-small">Specific Algorithmic Solution: Dynamic Time Warping (DTW) Medoid Filtering</h4>
+<ol class="doc-dec">
+<li>Resample all successful episodes in a task to a normalized length \( L = 100 \) using cubic spline interpolation.</li>
+<li>For every pair of trajectories \( (E_i, E_j) \), compute their pairwise <strong>Dynamic Time Warping (DTW)</strong> distance over the 7 joint angles:</li>
+</ol>
+<p class="doc-eq doc-eq-math">\[ D(E_i, E_j) = \mathrm{DTW}\left( q_{1:L}^{(i)}, q_{1:L}^{(j)} \right) \]</p>
+<ol class="doc-dec" start="3">
+<li>Identify the <strong>Medoid Trajectory</strong> \( E^* \) (the most representative, canonical demonstration):</li>
+</ol>
+<p class="doc-eq doc-eq-math">\[ E^* = \arg\min_{E_i} \sum_{j=1}^{N} D(E_i, E_j) \]</p>
+<ol class="doc-dec" start="4">
+<li>Calculate the distance of every episode to the canonical medoid: \( d_i = D(E_i, E^*) \).</li>
+<li><strong>Rejection Rule:</strong></li>
+</ol>
+<p class="doc-eq doc-eq-math">\[ \text{Reject } E_i \text{ if } d_i > \mathrm{Median}(d) + 2.0 \times \mathrm{MAD}(d) \]</p>
+<p><i>(where \( \mathrm{MAD} \) is the Median Absolute Deviation).</i><br>This removes outlier trajectories where an operator took an abnormal, convoluted path, leaving only consistent demonstrations that preserve a compact, un-blurred CVAE latent space.</p>
 <h5 class="doc-sub">Time warping</h5>
 <ul class="doc-dash">
 <li>Dynamic Time Warping (DTW) is a mathematical algorithm used to measure the similarity between two sequences (like movements, audio, or video) that happen at different speeds.
@@ -266,7 +321,20 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 </ul>
 </li>
 </ul>
-<figure class="doc-shot"><img src="assets/day3-notes/shot-dtw-detail.png" alt="Screenshot from the original document: DTW medoid filtering steps with equations." width="943" height="434" loading="lazy"></figure>
+<ol class="doc-dec">
+<li>Resample all successful episodes in a task to a normalized length \( L = 100 \) using cubic spline interpolation.</li>
+<li>For every pair of trajectories \( (E_i, E_j) \), compute their pairwise <strong>Dynamic Time Warping (DTW)</strong> distance over the 7 joint angles:</li>
+</ol>
+<p class="doc-eq doc-eq-math">\[ D(E_i, E_j) = \mathrm{DTW}\left( q_{1:L}^{(i)}, q_{1:L}^{(j)} \right) \]</p>
+<ol class="doc-dec" start="3">
+<li>Identify the <strong>Medoid Trajectory</strong> \( E^* \) (the most representative, canonical demonstration):</li>
+</ol>
+<p class="doc-eq doc-eq-math">\[ E^* = \arg\min_{E_i} \sum_{j=1}^{N} D(E_i, E_j) \]</p>
+<ol class="doc-dec" start="4">
+<li>Calculate the distance of every episode to the canonical medoid: \( d_i = D(E_i, E^*) \).</li>
+<li><strong>Rejection Rule:</strong></li>
+</ol>
+<p class="doc-eq doc-eq-math">\[ \text{Reject } E_i \text{ if } d_i > \mathrm{Median}(d) + 2.0 \times \mathrm{MAD}(d) \]</p>
 <ul class="doc-dash">
 <li><strong>Variables:</strong> <i>q</i><sup>(<i>i</i>)</sup> and <i>q</i><sup>(<i>j</i>)</sup> represent the two different robot recordings (like Person A and Person B drawing the "S"). The 1: <i>L</i> means it is looking at the full timeline of both recordings, from frame 1 to frame <i>L</i> (100)</li>
 <li>The algorithm creates a 2D mathematical grid. The bottom axis is the timeline of Episode <i>i</i> (1 to 100 frames), and the side axis is the timeline of Episode <i>j</i> (1 to 100 frames)</li>
