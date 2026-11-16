@@ -9,6 +9,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<script>
+MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 </head>
 <body>
 
@@ -158,7 +162,7 @@
 <h4 class="doc-h doc-h-small">Our notes</h4>
 
 <h4 class="doc-h">Stage 1: duration and length percentile</h4>
-<img class="doc-eq" src="assets/day3-notes/eq-reject-iqr.png" alt="Equation: Reject if T sub i &gt; Q sub 3 + 1.5 x IQR." width="586" height="107" loading="lazy">
+<p class="doc-eq doc-eq-math">\[ \text{Reject if } T_i > Q_3 + 1.5 \times \mathrm{IQR} \]</p>
 <ul class="doc-dash">
 <li>To get the absolute best AI performance, some researchers are ruthless and delete <em>everything</em> that isn't in the fastest 50% or 75% of recordings, ensuring the AI only learns from highly confident, direct movements.</li>
 <li>building on the idea for anomaly detection but not to delete. Just flag out eg 5th n 95th percentile</li>
@@ -175,7 +179,7 @@
 
 <h4 class="doc-h">Stage 3: Kinematic smoothness</h4>
 <h5 class="doc-sub">Jerk</h5>
-<img class="doc-eq" src="assets/day3-notes/eq-jerk.png" alt="Equation: J sub t = Delta cubed q sub t over Delta t cubed = (q sub t+2 - 3 q sub t+1 + 3 q sub t - q sub t-1) over Delta t cubed." width="946" height="127" loading="lazy">
+<p class="doc-eq doc-eq-math">\[ J_t = \frac{\Delta^3 q_t}{\Delta t^3} = \frac{q_{t+2} - 3q_{t+1} + 3q_t - q_{t-1}}{\Delta t^3} \]</p>
 <p>Equation:</p>
 <p><i>J</i><sub><i>t</i></sub>: The calculated Jerk score at the current time step (<i>t</i>).</p>
 <p><strong><i>q</i> (Position variables):</strong> The <i>q</i> variables represent the joint's actual position at specific times.</p>
@@ -193,13 +197,13 @@
 <li>High jerk indicates sudden movements/hand tremor/hiccups etc</li>
 </ul>
 <h5 class="doc-sub">Mean jerk</h5>
-<img class="doc-eq" src="assets/day3-notes/eq-mean-jerk.png" alt="Equation: S sub jerk of E = 1 over T times double sum of (J sub t,j) squared." width="946" height="127" loading="lazy">
+<p class="doc-eq doc-eq-math">\[ S_{\mathrm{jerk}}(E) = \frac{1}{T} \sum_{t=1}^{T} \sum_{j=1}^{7} \left( J_{t,j} \right)^2 \]</p>
 <ul class="doc-dash">
 <li>calculates a single score representing the overall "jerkiness" for an entire recorded episode (like one complete task attempt).</li>
 <li>Square ensures positive -&gt; penalise large ones even more -&gt; averages over joints and time steps</li>
 </ul>
 <h5 class="doc-sub">Filtering threshold</h5>
-<img class="doc-eq" src="assets/day3-notes/eq-filter-threshold.png" alt="Equation: Flag Episode E if S sub jerk of E &gt; mu sub jerk + 2 sigma sub jerk, or S sub jerk of E &gt; P sub 95." width="946" height="127" loading="lazy">
+<p class="doc-eq doc-eq-math">\[ \text{Flag Episode } E \text{ if } S_{\mathrm{jerk}}(E) > \mu_{\mathrm{jerk}} + 2\sigma_{\mathrm{jerk}} \quad \text{or} \quad S_{\mathrm{jerk}}(E) > P_{95} \]</p>
 <ul class="doc-dash">
 <li>step explains how to decide if an episode is <em>too</em> jerky and should be flagged.</li>
 <li>calculates the average jerkiness (<i>&micro;</i><sub><i>jerk</i></sub>) and the variation (<i>&sigma;</i><sub><i>jerk</i></sub>) across a whole dataset of episodes.</li>
@@ -218,7 +222,7 @@
 <h5 class="doc-sub">The Specific Checks</h5>
 <ol class="doc-dec">
 <li><strong>Timestamp Monotonicity and Dropped Packets</strong>
-<img class="doc-eq" src="assets/day3-notes/eq-timestamp.png" alt="Equation: Delta t sub k = timestamp sub k+1 - timestamp sub k." width="497" height="73" loading="lazy">
+<p class="doc-eq doc-eq-math">\[ \Delta t_k = \mathrm{timestamp}_{k+1} - \mathrm{timestamp}_k \]</p>
 <ul class="doc-circle">
 <li>checks for recording lag or missing data.</li>
 </ul>
@@ -228,7 +232,7 @@
 </ul>
 </li>
 <li><strong>Action-State Tracking Divergence</strong> (ensure s that follower followed and did not get stuck or stalled)
-<img class="doc-eq" src="assets/day3-notes/eq-action-state.png" alt="Equation: delta sub t = max over j in 1..7 of absolute value of a sub t,j - s sub t,j." width="499" height="75" loading="lazy">
+<p class="doc-eq doc-eq-math">\[ \delta_t = \max_{j \in [1..7]} \left| a_{t,j} - s_{t,j} \right| \]</p>
 <ol class="doc-roman">
 <li><strong><i>a</i><sub><i>t,j</i></sub> &minus; <i>s</i><sub><i>t,j</i></sub>:</strong> It takes the <em>Action</em> (<i>a</i>) the human commanded for a specific joint (<i>j</i>) at a specific time (<i>t</i>) and subtracts the actual <em>State</em> (<i>s</i>) where the robot's joint actually is.</li>
 <li><span class="doc-under"><span class="doc-over">max</span><span class="doc-below"><i>j</i>&isin;[1..7]</span></span><strong>:</strong> A robotic arm has 7 joints. This tells the system to calculate that error distance for all 7 joints, and then only look at the one joint with the <code>max</code> (biggest) error.</li>
@@ -240,14 +244,15 @@
 </ul>
 </li>
 <li><strong>Task Completion Proxy (Gripper State Delta)</strong> verifies that the robot even opened the hands to attempt task
-<img class="doc-eq" src="assets/day3-notes/eq-gripper.png" alt="Equation: Delta g = max over t of (g sub t) - min over t of (g sub t). If Delta g &lt; 0.005 m (5 mm), the gripper never actuated. The robot did not grasp an object. Drop the episode." width="786" height="130" loading="lazy">
+<p class="doc-eq doc-eq-math">\[ \Delta g = \max_t (g_t) - \min_t (g_t) \]</p>
+<p class="doc-note">If &Delta;g &lt; 0.005 m (5 mm), the gripper never actuated. The robot did not grasp an object. Drop the episode.</p>
 <ul class="doc-circle">
 <li>It checks the total range of motion of the robot's gripper (its "hand").</li>
 <li>subtracts the tightest the gripper ever closed ( <code>min</code> ) from the widest the gripper ever opened ( <code>max</code> ) during the entire episode.</li>
 <li>0=fail</li>
 </ul>
 </li>
-<li>In manipulation/pick-and-place tasks: &Delta;g=maxt(gt)&minus;mint(gt)\Delta g = \max_{t}(g_t) - \min_{t}(g_t)&Delta;g=tmax(gt)&minus;tmin(gt)</li>
+<li>In manipulation/pick-and-place tasks: \( \Delta g = \max_{t}(g_t) - \min_{t}(g_t) \)</li>
 </ol>
 
 <h4 class="doc-h">Stage 5: Trajectory consistency and Multimodal Collapse Prevention</h4>
@@ -275,7 +280,7 @@
 </ul>
 
 <h5 class="doc-sub">Medoid trajectory: most standard demonstration</h5>
-<img class="doc-eq" src="assets/day3-notes/eq-medoid.png" alt="Equation: E star = arg min over E sub i of the sum from j=1 to N of D(E sub i, E sub j)." width="402" height="149" loading="lazy">
+<p class="doc-eq doc-eq-math">\[ E^* = \arg\min_{E_i} \sum_{j=1}^{N} D(E_i, E_j) \]</p>
 <ul class="doc-dash">
 <li><i>E</i><sup>*</sup> (E-star): The final answer. This represents the "Medoid Trajectory," which is the single most standard, textbook demonstration of the task.</li>
 <li><strong><i>D</i>(<i>E</i><sub><i>i</i></sub>, <i>E</i><sub><i>j</i></sub>):</strong> The Dynamic Time Warping (DTW) distance (difference in physical path) between one specific candidate episode (<i>E</i><sub><i>i</i></sub>) and another episode (<i>E</i><sub><i>j</i></sub>).</li>
@@ -288,7 +293,7 @@
 <ul class="doc-dash">
 <li>statistical bouncer that throws away weird, wandering, or convoluted human demonstrations so they do not confuse the AI during training.</li>
 </ul>
-<img class="doc-eq" src="assets/day3-notes/eq-rejection.png" alt="Equation: Reject E sub i if d sub i &gt; Median(d) + 2.0 x MAD(d)." width="586" height="108" loading="lazy">
+<p class="doc-eq doc-eq-math">\[ \text{Reject } E_i \text{ if } d_i > \mathrm{Median}(d) + 2.0 \times \mathrm{MAD}(d) \]</p>
 <ul class="doc-dash">
 <li>MAD = Median Absolute Deviation (not affected by extreme values)</li>
 <li>It calculates the most centrally located data point in a clusterlates the distance (did_idi) of every individual episode to the Medoid.</li>
