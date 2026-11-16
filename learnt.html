@@ -13,6 +13,26 @@
 MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } };
 </script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+/* Day 4: a calmer reading layout, scoped to this entry. */
+.day4-entry .log-date { font-size: clamp(24px,4vw,38px); }
+.day4-entry .section > .subhead { max-width: 760px; margin: 12px auto 14px; font-size: clamp(23px,3vw,30px); font-weight: 600; line-height: 1.3; letter-spacing: -.025em; }
+.day4-entry .section > .subhead-note { max-width: 760px; margin: 0 auto 28px; font-size: 15px; line-height: 1.75; }
+.day4-entry .day4-demo { margin-left:auto; margin-right:auto; }
+.day4-entry .day3-doc { font-size:15px; line-height:1.8; }
+.day4-entry .doc-note { border-left:3px solid var(--powder); padding:10px 14px; background:var(--stripe); border-radius:0 8px 8px 0; font-size:13px; opacity:1; color:var(--ink-soft); }
+.day4-entry .doc-h { font-weight:600; line-height:1.4; }
+.day4-entry .doc-sub { border-top:1px solid var(--powder); padding-top:26px; margin-top:32px; font-size:18px; line-height:1.45; }
+.day4-entry .doc-eq-math { background:var(--paper); border:1px solid var(--powder); border-radius:12px; padding:14px 12px; font-size:1rem; }
+.qd-flow { display:grid; gap:12px; text-align:center; margin:24px 0; }
+.qd-node { background:var(--paper); border:1px solid var(--powder); border-radius:12px; padding:16px; font-size:14px; line-height:1.6; }
+.qd-node strong { display:block; color:var(--blue-deep); margin-bottom:5px; }
+.qd-branches { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.qd-arrow { color:var(--blue); font-size:24px; line-height:1; }
+.day4-source pre { white-space:pre-wrap; overflow-wrap:anywhere; padding:18px; border:1px solid var(--powder); border-radius:12px; background:var(--paper); font:12px/1.75 ui-monospace,monospace; }
+.day4-source summary { cursor:pointer; color:var(--blue-deep); font-weight:600; padding:12px 0; }
+@media(max-width:640px) { .qd-branches { grid-template-columns:1fr; } .day4-entry .doc-eq-math { font-size:.82rem; } .day4-entry .log-tags span { letter-spacing:.05em; } }
+</style>
 </head>
 <body>
 
@@ -307,7 +327,7 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 </section></div></div></details>
 
 <details class="log-entry day4-entry" id="day-4" open>
-<summary class="log-toggle" data-reveal><span class="log-date">Day <em>4</em></span><span class="log-tags"><span>D4</span><span>Deployment observations</span></span><svg class="log-chevron" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+<summary class="log-toggle" data-reveal><span class="log-date">16 <em>Nov</em> 2026</span><span class="log-tags"><span>D4</span><span>Deployment &amp; data curation</span></span><svg class="log-chevron" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
 <div class="log-body"><div class="log-inner"><section class="section"><h3 class="subhead" data-reveal>Breakthrough: natural-language prompt to a moving arm</h3>
 <p class="subhead-note" data-reveal>Team update: we managed to use AI to bring our vision of a natural-language prompt to the robot arm moving. Below are our deployment observations from the deployment and optimization report, in the team's own words.</p>
 <figure class="day4-demo" data-reveal><video src="assets/day4-arm-limit.mp4" poster="assets/day4-arm-limit-poster.jpg" controls loop muted playsinline preload="metadata"></video><figcaption>A limitation we saw: the gripper reaches the orange cube on the conveyor but does not pick it up. The cube is still on the belt when the arm lifts away.</figcaption></figure>
@@ -386,45 +406,83 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 <h3 class="subhead" data-reveal>Data curation: quality and diversity</h3>
 <p class="subhead-note" data-reveal>Day 4 &middot; Monday, 16 November 2026. Notes from our data-curation methodology, coreset output and ACT training-run screenshots. These complement the deployment observations. The screenshots show a curated dataset and a training run in progress, not a completed evaluation or a measured improvement in task success.</p>
 <div class="day3-doc day4-doc">
-<h4 class="doc-h">The core principle: Quality-Diversity (QD) selection</h4>
+<h4 class="doc-h">The Core Principle: Quality-Diversity (QD) Selection</h4>
 <p>Rather than keep only the highest-scoring demonstrations overall, the proposed method balances execution quality with coverage of different task conditions.</p>
-<p class="day4-flow">Filtered candidate pool (cleaned episodes) &rarr; quality scoring and coverage bins &rarr; stratified top-K selection within each bin &rarr; training coreset</p>
+<div class="qd-flow" role="group" aria-label="Quality-Diversity selection flow">
+<div class="qd-node"><strong>Filtered Candidate Pool</strong>(Cleaned Episodes)</div>
+<div class="qd-arrow" aria-hidden="true">&darr;</div>
+<div class="qd-branches">
+<div class="qd-node"><strong>Step 1: Compute Trajectory Quality Score (Q)</strong>Smoothness (SPARC / Jerk)<br>Path Efficiency (Tortuosity)<br>Grasp Decisiveness</div>
+<div class="qd-node"><strong>Step 2: Map State &amp; Visual Coverage Bins</strong>Initial Object Position (Spatial Grid)<br>First-Frame Visual Embedding (DINOv2 / PCA)<br>Approach Angle</div>
+</div>
+<div class="qd-arrow" aria-hidden="true">&darr;</div>
+<div class="qd-node"><strong>Step 3: Stratified Top-K Selection</strong>Pick the top-K highest quality demonstrations<br>from EACH coverage bin</div>
+<div class="qd-arrow" aria-hidden="true">&darr;</div>
+<div class="qd-node"><strong>Optimal Training Coreset</strong>(Maximizes Coverage, Minimizes Redundancy &amp; Jitter)</div>
+</div>
+<p class="doc-note">Methodology notes transcribed from the supplied screenshots below. Their stated benefits and operator rules are proposed guidance, not results verified by the training run.</p>
 
-<h5 class="doc-sub">1. Score each demonstration by execution quality</h5>
-<p>The methodology assigns each valid episode a quality score \(Q\in[0,1]\), combining path directness, movement smoothness and grasp decisiveness.</p>
-<ul class="doc-dash">
-<li><strong>Path directness / tortuosity:</strong> compare total joint-space travel with the start-to-end distance. Lower tortuosity means less wandering. The notes use approximately 1.0&ndash;1.3 as a low-tortuosity example and values above 2.0 as a possible sign of detours or hesitation.</li>
+<h5 class="doc-sub">Step 1: Score Every Demonstration by Execution Quality (\(Q\))</h5>
+<p>Every valid episode receives a scalar <strong>Quality Score \(Q\in[0,1]\)</strong> combining three physical metrics:</p>
+<h6 class="doc-sub">1. Path Directness / Tortuosity (\(\tau\))</h6>
+<p>Measures how much the arm wandered versus taking a direct, confident trajectory:</p>
+<div class="doc-eq doc-eq-math">\[\tau=\frac{\text{Total Joint Arc Length}}{\text{End-to-End Distance}}=\frac{\sum_{t=1}^{T-1}\lVert q_{t+1}-q_t\rVert_2}{\lVert q_T-q_1\rVert_2}\]</div>
+<ul>
+<li><strong>Goal:</strong> Low \(\tau\) (\(\approx 1.0\text{–}1.3\)). High \(\tau&gt;2.0\) indicates the operator took a looping detour or hesitated.</li>
+<li>Normalized Score: \(S_{\mathrm{path}}=\exp\left(-(\tau-1)\right)\).</li>
 </ul>
-<p class="doc-eq doc-eq-math">\[\tau=\frac{\sum_{t=1}^{T-1}\lVert q_{t+1}-q_t\rVert_2}{\lVert q_T-q_1\rVert_2},\qquad S_{\mathrm{path}}=\exp[-(\tau-1)]\]</p>
-<ul class="doc-dash">
-<li><strong>Movement smoothness:</strong> the notes discuss spectral arc length (SPARC) or jerk. Their displayed jerk-based score is \(S_{\mathrm{smooth}}=1-J_{\mathrm{episode}}/J_{\max}\), where \(J\) is mean squared jerk.</li>
-<li><strong>Grasp decisiveness:</strong> one closure followed by a held grasp scores 1.0 in the example; opening, closing, adjusting and closing again (&ldquo;gripper hunt&rdquo;) scores 0.3.</li>
+<h6 class="doc-sub">2. Movement Smoothness (Spectral Arc Length / SPARC or Jerk)</h6>
+<p>Smooth, confident human movement has a compact frequency spectrum.</p>
+<ul><li>Normalized Score: \(S_{\mathrm{smooth}}=1.0-\frac{J_{\mathrm{episode}}}{J_{\max}}\) (where \(J\) is the mean squared jerk).</li></ul>
+<h6 class="doc-sub">3. Grasp Decisiveness (Finger Contact Speed)</h6>
+<p>A good pick has a sharp, decisive gripper closure without readjustment:</p>
+<ul>
+<li>If the gripper closed once and held position: \(S_{\mathrm{grasp}}=1.0\).</li>
+<li>If the operator opened, closed, adjusted, and re-closed (gripper hunt): \(S_{\mathrm{grasp}}=0.3\).</li>
 </ul>
-<p class="doc-eq doc-eq-math">\[Q(E)=0.4S_{\mathrm{path}}+0.3S_{\mathrm{smooth}}+0.3S_{\mathrm{grasp}}\]</p>
+<p><strong>Composite Quality Score:</strong></p>
+<div class="doc-eq doc-eq-math">\[Q(E)=0.4\cdot S_{\mathrm{path}}+0.3\cdot S_{\mathrm{smooth}}+0.3\cdot S_{\mathrm{grasp}}\]</div>
 <p class="doc-note">These are the proposed scoring rules shown in the methodology notes. The screenshots do not show the scoring implementation or its handling of edge cases, such as zero start-to-end displacement or normalization bounds.</p>
 
-<h5 class="doc-sub">2. Define coverage bins to retain diversity</h5>
-<ul class="doc-dash">
-<li><strong>Initial object position:</strong> divide the workspace into a spatial grid, for example a 3 &times; 3 grid of left/center/right and near/mid/far.</li>
-<li><strong>Visual conditions:</strong> extract features from the first RGB frame using a model such as DINOv2-small or ResNet-18, then cluster them with k-means (the examples use 3 or 5 clusters). The aim is to retain variation in lighting, table textures and distractors.</li>
-<li><strong>Approach angle / orientation:</strong> group demonstrations by object orientation or initial wrist angle, with 0&deg;, 45&deg; and 90&deg; as example conditions.</li>
+<h5 class="doc-sub">Step 2: Define Coverage Bins (Ensuring Diversity)</h5>
+<p>To avoid overfitting to one specific setup, group demonstrations across physical dimensions:</p>
+<ol>
+<li><strong>Initial Object Spatial Position:</strong> Divide your workspace table into an \(M\times N\) spatial grid (e.g., \(3\times3\) grid: Left, Center, Right \(\times\) Near, Mid, Far).</li>
+<li><strong>Visual Diversity (Lighting &amp; Backgrounds):</strong> Run the first RGB frame through a lightweight feature extractor (e.g., DINOv2-small or ResNet-18) and cluster with k-means (\(k=3\) or \(k=5\)). This ensures training includes morning vs. afternoon lighting, different table textures, or varied distractor placement.</li>
+<li><strong>Approach Angle / Orientation:</strong> If picking objects with varying orientations (\(0^\circ,45^\circ,90^\circ\)), bin by initial wrist angle (\(q_6,q_7\)).</li>
+</ol>
+
+<h5 class="doc-sub">Step 3: Stratified Top-K Selection (The Coreset)</h5>
+<p>Instead of training on whatever you happen to have recorded:</p>
+<ol>
+<li>Define your budget \(B\) (e.g., for ACT, \(B=50\text{–}100\) episodes is the sweet spot).</li>
+<li>If you have \(G\) distinct coverage bins, target \(K=\lfloor B/G\rfloor\) episodes per bin.</li>
+<li>Within each bin, <strong>sort by Composite Quality Score \(Q\) and select the top \(K\)</strong>.</li>
+</ol>
+<p><strong>Why this outperforms random sampling:</strong></p>
+<ul>
+<li>It guarantees <strong>100% spatial coverage</strong> (no blind spots where the robot has never seen an object).</li>
+<li>It eliminates <strong>redundancy</strong> (doesn't waste 80% of model capacity on the center bin).</li>
+<li>It feeds the model only the <strong>smoothest, most direct examples</strong> for each position.</li>
 </ul>
+<p class="doc-note">The benefits above reproduce the source notes' claims. Actual coverage depends on which bins contain valid demonstrations; the screenshots do not establish complete workspace coverage or an advantage over random sampling in an evaluation.</p>
 
-<h5 class="doc-sub">3. Select the top-K demonstrations within each bin</h5>
-<p>Choose a total episode budget \(B\). For \(G\) coverage bins, target roughly \(B/G\) episodes per bin. Within each bin, rank demonstrations by the composite quality score \(Q\) and keep the top \(K\).</p>
-<p>The aim is to avoid over-representing one easy or frequently recorded setup while retaining smooth, direct demonstrations from different conditions. Coverage depends on which bins contain valid demonstrations; the screenshots do not establish complete workspace coverage or an advantage over random sampling in an evaluation.</p>
-
-<h5 class="doc-sub">4. Consider single-operator consistency</h5>
-<p>The methodology recommends avoiding a mixture of different operators' trajectories within the same coverage bin, and preferring the operator whose demonstrations have lower mean tortuosity and smoother jerk. Its rationale is to reduce conflicting demonstration styles for ACT's CVAE. This is a proposed selection rule, not a comparison verified by the supplied training screenshot.</p>
+<h5 class="doc-sub">Step 4: Single-Operator Consistency (Critical for ACT / CVAE)</h5>
+<p>Because ACT models human operator style into a latent variable \(z\):</p>
+<ul>
+<li><strong>Rule:</strong> If two different human operators collected data for the same coverage bin, <strong>do not mix their trajectories</strong>.</li>
+<li>Choose the operator who demonstrated lower mean tortuosity and smoother jerk. Mixing operators on the same task condition blurs the CVAE prior, causing the robot to waffle between two strategies at inference time.</li>
+</ul>
+<p class="doc-note">This is a proposed selection rule, not a comparison verified by the supplied training screenshot.</p>
 
 <h5 class="doc-sub">Glossary</h5>
 <div class="day4-table-wrap"><table class="day4-table">
-<thead><tr><th>Symbol</th><th>Meaning</th></tr></thead>
+<thead><tr><th>Letter</th><th>Stands for</th><th>What it actually means</th></tr></thead>
 <tbody>
-<tr><td>\(B\)</td><td>Budget: total episodes wanted in the final training dataset.</td></tr>
-<tr><td>\(G\)</td><td>Groups / grid bins: the different scenarios or workspace zones.</td></tr>
-<tr><td>\(K\)</td><td>Items to keep: the number of demonstrations selected from each bin.</td></tr>
-<tr><td>\(Q\)</td><td>Quality score: how smooth, direct and decisive a demonstration is under the scoring rules.</td></tr>
+<tr><td>\(B\)</td><td>Budget</td><td>The <strong>total number of episodes</strong> you want in your final training dataset (e.g., 80 episodes total).</td></tr>
+<tr><td>\(G\)</td><td>Groups / Grid bins</td><td>How many <strong>different scenarios or table zones</strong> you divided your task into (e.g., 8 zones on the table: left-near, center-near, right-far, etc.).</td></tr>
+<tr><td>\(K\)</td><td>K-items to keep</td><td>Standard math/CS notation for a count of items to pick (like in "Top-K"). It is the number of episodes you take from each group.</td></tr>
+<tr><td>\(Q\)</td><td>Quality score</td><td>A score from 0 to 1 grading how smooth, direct, and successful each robot episode was.</td></tr>
 </tbody></table></div>
 
 <h5 class="doc-sub">Coreset output: 75% retained</h5>
@@ -441,6 +499,19 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 <p>The selected episode specification was saved to <code>datasets/nero_conveyor_sort/curated_coreset.json</code>. The output provides the curated episode list for LeRobot's <code>--dataset.episodes</code> argument.</p>
 <p class="doc-note">The script output reports scores out of 100, while the methodology defines Q on a 0&ndash;1 scale. The screenshots do not show how the implementation maps between them or confirm that every proposed coverage/operator rule was applied. The score difference alone does not establish better robot performance.</p>
 
+<details class="day4-source"><summary>Full coreset output and selected episode list</summary><pre>RECOMMENDED TRAINING CORESET (75% Best Demonstrations)
+Total Evaluated Episodes : 160
+Curated Keep Episodes    : 120 episodes
+Pruned Outlier Episodes  : 40 episodes
+Mean Quality Score (All) : 43.5 / 100
+Mean Quality Score (Keep): 44.2 / 100
+
+Pass this curated episode list into LeRobot training:
+--dataset.episodes=&quot;[0, 1, 2, 3, 4, 5, 7, 10, 11, 13, 14, 15, 16, 18, 19, 20, 22, 24, 25, 27, 28, 29, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 44, 45, 46, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 65, 66, 67, 68, 69, 70, 71, 72, 73, 75, 76, 77, 78, 79, 84, 85, 86, 87, 88, 89, 90, 93, 94, 95, 96, 97, 98, 99, 101, 102, 103, 104, 105, 106, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 121, 122, 123, 124, 126, 127, 129, 131, 133, 134, 135, 137, 139, 141, 145, 151, 152, 153, 154, 155, 156, 158, 159]&quot;
+
+Saved curated episode spec to:
+/home/sc1/Desktop/RDP2026Nov/datasets/nero_conveyor_sort/curated_coreset.json</pre></details>
+
 <h5 class="doc-sub">ACT training run on the curated dataset</h5>
 <p>The terminal screenshot shows LeRobot creating the dataset, policy and optimizer, then starting offline ACT training in the <code>RDP2026Nov</code> project folder.</p>
 <div class="day4-table-wrap"><table class="day4-table">
@@ -451,10 +522,66 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 <tr><td>Configured training steps</td><td>60,000</td></tr>
 <tr><td>Effective batch size</td><td>4</td></tr>
 <tr><td>Vision backbone</td><td>ResNet-18</td></tr>
-<tr><td>Displayed learning rate</td><td>1 &times; 10<sup>&minus;5</sup></td></tr>
+<tr><td>Displayed learning rate</td><td>\(1\times10^{-5}\)</td></tr>
 <tr><td>Output directory</td><td><code>outputs/train/act_nero_conveyor_sort_curated</code></td></tr>
 </tbody></table></div>
 <p class="doc-note">The capture shows early training progress, not completion of all 60,000 steps. It does not include a held-out evaluation, a success rate, or a before/after task-performance comparison.</p>
+<details class="day4-source"><summary>Visible training configuration and run log</summary><pre>Visible configuration (the screenshot starts partway through the configuration):
+&#x27;optimizer_lr_backbone&#x27;: 1e-05,
+&#x27;optimizer_weight_decay&#x27;: 0.0001,
+&#x27;output_features&#x27;: {},
+&#x27;pre_norm&#x27;: False,
+&#x27;pretrained_backbone_weights&#x27;: &#x27;ResNet18_Weights.IMAGENET1K_V1&#x27;,
+&#x27;pretrained_path&#x27;: None,
+&#x27;pretrained_revision&#x27;: None,
+&#x27;private&#x27;: None,
+&#x27;push_to_hub&#x27;: False,
+&#x27;replace_final_stride_with_dilation&#x27;: False,
+&#x27;repo_id&#x27;: None,
+&#x27;tags&#x27;: None,
+ &#x27;temporal_ensemble_coeff&#x27;: None,
+ &#x27;type&#x27;: &#x27;act&#x27;,
+ &#x27;use_amp&#x27;: True,
+ &#x27;use_peft&#x27;: False,
+ &#x27;use_vae&#x27;: True,
+ &#x27;vision_backbone&#x27;: &#x27;resnet18&#x27;},
+&#x27;prefetch_factor&#x27;: 4,
+&#x27;rename_map&#x27;: {},
+&#x27;resume&#x27;: False,
+&#x27;reward_model&#x27;: None,
+&#x27;sample_weighting&#x27;: None,
+&#x27;save_checkpoint&#x27;: True,
+&#x27;save_checkpoint_to_hub&#x27;: False,
+&#x27;save_freq&#x27;: 10000,
+&#x27;scheduler&#x27;: None,
+&#x27;seed&#x27;: 1000,
+&#x27;steps&#x27;: 60000,
+&#x27;tolerance_s&#x27;: 0.0001,
+&#x27;use_policy_training_preset&#x27;: True,
+&#x27;wandb&#x27;: {&#x27;add_tags&#x27;: True,
+          &#x27;disable_artifact&#x27;: False,
+          &#x27;enable&#x27;: False,
+          &#x27;entity&#x27;: None,
+          &#x27;mode&#x27;: None,
+          &#x27;notes&#x27;: None,
+          &#x27;project&#x27;: &#x27;lerobot&#x27;,
+          &#x27;run_id&#x27;: None}}
+
+2026-11-16 15:24:39 Logs will be saved locally.
+2026-11-16 15:24:39 Creating dataset
+2026-11-16 15:24:40 Creating policy
+2026-11-16 15:24:40 Creating optimizer and scheduler
+2026-11-16 15:24:40 Output dir: outputs/train/act_nero_conveyor_sort_curated
+2026-11-16 15:24:40 cfg.steps=60000 (60K)
+2026-11-16 15:24:40 dataset.num_frames=107834 (108K)
+2026-11-16 15:24:40 dataset.num_episodes=120
+2026-11-16 15:24:40 Effective batch size: 4 x 1 = 4
+2026-11-16 15:24:40 num_learnable_params=51601288 (52M)
+2026-11-16 15:24:40 num_total_params=51601288 (52M)
+2026-11-16 15:24:40 Start offline training on a fixed dataset, with effective batch size: 4
+2026-11-16 15:24:49 step:200 smpl:800 ep:1 epch:0.01 loss:7.938 grdn:221.343 lr:1.0e-05 updt_s:0.030 data_s:0.015 smp/s:90 mem_gb:2.16 l1_loss:0.556 kld_loss:0.738
+
+Visible progress: 197/60000 and 285/60000 (0%).</pre></details>
 </div>
 </section>
 </div></div></details>
