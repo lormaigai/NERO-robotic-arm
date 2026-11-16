@@ -142,6 +142,13 @@
 <p class="subhead-note" data-reveal>The document below is the same document set directly on the page - original wording, bullet points and equations, with images only where the original has screenshots or equation graphics. <a href="assets/day3-notes/day3-notes.pdf" target="_blank" rel="noopener">Open the original document (PDF)</a>. <a href="ideation.html#day-2026-11-13">Today's photos and video</a> remain under Ideation &amp; development.</p>
 <div class="day3-doc">
 <h4 class="doc-h">Environments</h4>
+<ul class="doc-dash">
+<li>dev</li>
+<li>testing</li>
+<li>staging</li>
+<li>production</li>
+<li><strong>Virtual Environment (Conda):</strong> An isolated workspace so one project's software packages don't clash with another's.</li>
+</ul>
 <figure class="doc-shot"><img src="assets/day3-notes/shot-env-tables.png" alt="Screenshot from the original document: environment variable tables - where each variable is set, its value and purpose. One machine-specific home path is covered for privacy." width="946" height="482" loading="lazy"></figure>
 <figure class="doc-shot"><img src="assets/day3-notes/shot-env-readby.png" alt="Screenshot from the original document: variables read by Python code and optional user-settable variables." width="946" height="535" loading="lazy"></figure>
 <figure class="doc-shot"><img src="assets/day3-notes/shot-datasets.png" alt="Screenshot from the original document: datasets table - 6 datasets, 400 episodes." width="946" height="581" loading="lazy"></figure>
@@ -154,13 +161,14 @@
 <img class="doc-eq" src="assets/day3-notes/eq-reject-iqr.png" alt="Equation: Reject if T sub i &gt; Q sub 3 + 1.5 x IQR." width="586" height="107" loading="lazy">
 <ul class="doc-dash">
 <li>To get the absolute best AI performance, some researchers are ruthless and delete <em>everything</em> that isn't in the fastest 50% or 75% of recordings, ensuring the AI only learns from highly confident, direct movements.</li>
+<li>building on the idea for anomaly detection but not to delete. Just flag out eg 5th n 95th percentile</li>
 </ul>
 
 <h4 class="doc-h">Stage 2: cut out pauses</h4>
 <figure class="doc-shot"><img src="assets/day3-notes/shot-stage2-algo.png" alt="Screenshot from the original document: specific algorithm for cutting out pauses." width="946" height="317" loading="lazy"></figure>
 <ul class="doc-dash">
 <li><strong>Measuring Speed (<i>v</i><sub>t</sub>):</strong> The algorithm calculates the physical speed of the robot's joints at every fraction of a second.</li>
-<li><strong>The Movement Threshold (<i>&epsilon;</i><sub>v</sub>):</strong> It establishes a baseline speed limit (0.02 rad/s). Any movement slower than this is considered "sitting still" or just sensor static.</li>
+<li><strong>The Movement Threshold (<i>&epsilon;</i><sub>v</sub>):</strong> It establishes a baseline speed limit eg 0.02 rad/s (not decided). Any movement slower than this is considered "sitting still" or just sensor static.</li>
 <li><strong>Leading Trim (Cutting the Start):</strong> The math scans the beginning of the video to find the exact moment the robot moves faster than the threshold for 5 frames in a row. It keeps a tiny fraction of a second right before that moment as a buffer, and deletes all the dead air before it.</li>
 <li><strong>Trailing Trim (Cutting the End):</strong> It scans the end of the video to find exactly when the task is finished and the robot's speed drops below the threshold for good. It deletes all the dead air at the tail end of the recording.</li>
 </ul>
@@ -180,7 +188,7 @@
 <p><strong>The Numerator (<i>q</i><sub><i>t</i>+2</sub> &minus; 3<i>q</i><sub><i>t</i>+1</sub> + 3<i>q</i><sub><i>t</i></sub> &minus; <i>q</i><sub><i>t</i>&minus;1</sub>):</strong> This is a mathematical shortcut called a "third finite difference." To get jerk, you have to measure the change in position (velocity), then the change in velocity (acceleration), and finally the change in acceleration (jerk). The multipliers (the 3s and minus signs) are the direct mathematical result of stacking those three layers of differences into one single formula.</p>
 <p><strong>The Denominator (&Delta;<i>t</i><sup>3</sup>):</strong> &Delta;<i>t</i> (Delta <i>t</i>) is the set time interval between each recorded frame. Because jerk is the <em>third</em> level of change over time (position &rarr; velocity &rarr; acceleration &rarr; jerk), the time gap must be cubed (&Delta;<i>t</i> &times; &Delta;<i>t</i> &times; &Delta;<i>t</i>) to scale the final number correctly.</p>
 <ul class="doc-dash">
-<li>Differentiated acceleration (m/s^3)</li>
+<li>Differentiated acceleration (rad or m/s^3)</li>
 <li>Third time derivative of position</li>
 <li>High jerk indicates sudden movements/hand tremor/hiccups etc</li>
 </ul>
@@ -196,11 +204,12 @@
 <li>step explains how to decide if an episode is <em>too</em> jerky and should be flagged.</li>
 <li>calculates the average jerkiness (<i>&micro;</i><sub><i>jerk</i></sub>) and the variation (<i>&sigma;</i><sub><i>jerk</i></sub>) across a whole dataset of episodes.</li>
 <li>An episode is flagged as an "erratic trajectory" if its jerk score (<i>S</i><sub><i>jerk</i></sub>) is significantly higher than average (specifically, if it's more than two standard deviations above the mean, or above the 95th percentile).</li>
+<li>Limitation: extreme values can affect mean and standard deviation -&gt; less effective -&gt; MAD as alternative</li>
 </ul>
 <h5 class="doc-sub">Butterworth</h5>
 <ul class="doc-dash">
 <li>method to clean up the data before analysis, specifically to remove unintentional human hand tremors.</li>
-<li>cutoff frequency is set between 4.0-5.0 Hz because intentional human movement is usually slower (&lt; 3 Hz), while tremors or data errors (jitter) are usually faster (&gt; 8 Hz).</li>
+<li>cutoff frequency is proposed to be between 4.0-5.0 Hz because intentional human movement is usually slower (&lt; 3 Hz), while tremors or data errors (jitter) are usually faster (&gt; 8 Hz).</li>
 <li>Limitation: complementary to other methods because it only detects jerkiness but not incomplete recordings</li>
 </ul>
 
@@ -281,10 +290,11 @@
 </ul>
 <img class="doc-eq" src="assets/day3-notes/eq-rejection.png" alt="Equation: Reject E sub i if d sub i &gt; Median(d) + 2.0 x MAD(d)." width="586" height="108" loading="lazy">
 <ul class="doc-dash">
-<li>MAD = Median Absolute Deviation</li>
+<li>MAD = Median Absolute Deviation (not affected by extreme values)</li>
 <li>It calculates the most centrally located data point in a clusterlates the distance (did_idi) of every individual episode to the Medoid.</li>
 <li>It finds the middle-ground distance across the whole dataset</li>
 <li>If a specific episode's distance is greater than the median plus twice the typical variation, it proves the human operator took a path that was <em>too</em> extreme or unusual. That episode is rejected and deleted.</li>
+<li>*trajectory similarity vs previously unusual data</li>
 </ul>
 
 <p>training an AI model (like ACT) to control a robot, it learns by compressing human demonstrations into a mathematical "latent space" (using a Conditional Variational Autoencoder, or CVAE) and then decoding them back into actions.</p>
