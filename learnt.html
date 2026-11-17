@@ -99,7 +99,7 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
       </div>
       <div class="card learn" data-reveal style="--i:4">
         <h4>Plain RGB is a legitimate starting point</h4>
-        <p>ALOHA reaches its reported results with commodity webcams and no depth sensor.<a class="cite" href="research.html#ref-2">[2]</a> Open question for the team: would adding a depth camera help NERO enough to be worth the extra setup? We have not tested this yet.</p>
+        <p>ALOHA reaches its reported results with commodity webcams and no depth sensor.<a class="cite" href="research.html#ref-2">[2]</a> We have not tested this yet.</p>
       </div>
       <div class="card learn" data-reveal style="--i:5">
         <h4>Existing tooling: LeRobot</h4>
@@ -141,8 +141,8 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
         <p>Our pipeline could end up running in more than one place - for example a training laptop and a computer driving the arm. Settings like dataset paths, camera device names or API keys could differ between them, and env vars would hold those differences so the code itself stays identical.<a class="cite" href="research.html#ref-6">[6]</a> They also keep secrets out of the repo - env vars are much less likely to be committed by accident than a config file.<a class="cite" href="research.html#ref-6">[6]</a></p>
       </div>
       <div class="card learn" data-reveal style="--i:4">
-        <h4>Open question: what's in NERO's environment?</h4>
-        <p>We haven't yet confirmed what was actually added into the environment of the robotic arm - which variables exist on its machine and what they contain. Question to take back to the team: what was added, and why those particular ones? <strong>Day 3 update:</strong> the new document now lists reported settings below; these have not been checked directly on the arm computer.<a class="cite" href="#day-2026-11-13">[D3]</a></p>
+        
+        <p>We haven't yet confirmed what was actually added into the environment of the robotic arm - which variables exist on its machine and what they contain. <strong>Day 3 update:</strong> the new document now lists reported settings below; these have not been checked directly on the arm computer.<a class="cite" href="#day-2026-11-13">[D3]</a></p>
       </div>
     </div>
 
@@ -548,4 +548,4 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 
 <script src="script.js"></script>
 </body>
-  </html>
+</html>
