@@ -359,6 +359,14 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 <li><strong>Formula:</strong></li>
 </ul>
 <p class="doc-eq doc-eq-math">\[ S_t = \alpha \cdot X_t + (1 - \alpha) \cdot S_{t-1} \]</p>
+<p>What each variable means, in plain terms:</p>
+<ul class="doc-disc">
+<li><strong>\( S_t \)</strong> - the smoothed command at the current timestep: the filtered instruction that is actually sent to the arm's motors. This is the calm, stable output of the filter.</li>
+<li><strong>\( X_t \)</strong> - the raw command the AI policy just predicted for this timestep, before any smoothing. On its own it is jittery; it is the noisy input the filter cleans up.</li>
+<li><strong>\( S_{t-1} \)</strong> - the smoothed command from the previous timestep, one step ago. Feeding it back in gives the filter a short memory, so each new output stays close to the last one instead of jumping around.</li>
+<li><strong>\( \alpha \)</strong> (alpha) - the smoothing factor, a number between 0 and 1 that sets the blend: the new raw command gets weight \( \alpha \), and the previous smoothed command gets weight \( 1 - \alpha \). We use \( \alpha = 0.2 \), so every command sent to the arm is 20% the new prediction and 80% the previous smoothed value. A larger alpha follows the policy more closely but smooths less; a smaller alpha smooths harder but reacts more slowly.</li>
+<li><strong>\( t \)</strong> - the timestep counter: the current step in the control loop (so \( t-1 \) is simply the step before it).</li>
+</ul>
 <ul class="doc-dash">
 <li>(with \( \alpha = 0.2 \)).</li>
 <li><strong>Result:</strong> Dampened high-frequency noise and produced fluid motion.</li>
@@ -376,19 +384,6 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 </ul>
 </li>
 </ul>
-
-<p><strong>Phase 4: Safety &amp; Object Discrimination</strong></p>
-<ul class="doc-dash">
-<li><strong>Issue:</strong> Requirement to avoid red cubes entirely and only interact with orange cubes.</li>
-<li><strong>Fix:</strong> Since the policy is a black box, a Manual Safety Interlock was implemented in the controller.
-<ul class="doc-dash">
-<li><strong>Safety Lock:</strong> A boolean <code>_locked</code> flag that completely blocks all motor commands.</li>
-<li><strong>Observation Mode:</strong> A mode that allows the arm to move but locks the gripper wide open.</li>
-<li><strong>Protocol:</strong> Robot remains locked by default \( \rightarrow \) User manually unlocks for specific targets (e.g., Orange Cube).</li>
-</ul>
-</li>
-</ul>
-<p class="doc-note">Note: the red/orange separation here is done by a person manually unlocking the arm for a chosen target. The arm is not telling the cube colors apart on its own.</p>
 
 <h5 class="doc-sub">3. Final Control Architecture</h5>
 <p>The current system operates as a layered controller:</p>
