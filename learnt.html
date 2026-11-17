@@ -121,17 +121,6 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
         <h4>Env vars are not environments</h4>
         <p>Two ideas that sound the same. An <em>environment</em> is where the software runs - a laptop, a test server, the computer on the arm.<a class="cite" href="research.html#ref-7">[7]</a> An <em>environment variable</em> is one setting inside that environment. The same code can behave differently in each environment purely because the variables differ.<a class="cite" href="research.html#ref-6">[6]</a></p>
       </div>
-      <div class="card learn" data-reveal style="--i:2">
-        <h4>The main types of environment</h4>
-        <ul class="doc-dash">
-          <li><strong>Local</strong>: your own machine while you build.</li>
-          <li><strong>Development</strong>: the sandbox where changes are tried out.</li>
-          <li><strong>Testing</strong>: where new code gets checked before release.</li>
-          <li><strong>Staging</strong>: a mirror of production for a final rehearsal.</li>
-          <li><strong>Production (live)</strong>: the real thing that end users - or in our case the robot - actually run on.<a class="cite" href="research.html#ref-7">[7]</a></li>
-          <li><em>Hosted</em> means it runs on a server somewhere else; <em>local</em> means it's on the machine in front of you.<a class="cite" href="research.html#ref-7">[7]</a></li>
-        </ul>
-      </div>
       <div class="card learn" data-reveal style="--i:3">
         <h4>Why environments matter for NERO</h4>
         <p>Our pipeline could end up running in more than one place - for example a training laptop and a computer driving the arm. Settings like dataset paths, camera device names or API keys could differ between them, and env vars would hold those differences so the code itself stays identical.<a class="cite" href="research.html#ref-6">[6]</a> They also keep secrets out of the repo - env vars are much less likely to be committed by accident than a config file.<a class="cite" href="research.html#ref-6">[6]</a></p>
@@ -172,6 +161,7 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 <li><strong>testing:</strong> the environment where new code is deliberately checked before it goes anywhere important. The code itself does not change; the aim is to find mistakes while they are still cheap to fix.</li>
 <li><strong>staging:</strong> a close copy of the production setup, configured to match the arm's computer as closely as possible. It is the final rehearsal: if the code runs correctly here, it should run correctly live.</li>
 <li><strong>production (live):</strong> the real environment - the code as it actually runs on NERO's computer and drives the arm. Code reaches this stage only after passing the earlier ones, because a fault here wastes robot time and could damage the arm.</li>
+<li><em>Hosted</em> means it runs on a server somewhere else; <em>local</em> means it's on the machine in front of you.<a class="cite" href="research.html#ref-7">[7]</a></li>
 </ul>
 <p>The flow moves in one direction only: dev &rarr; testing &rarr; staging &rarr; production, so the arm never runs code that has not passed the earlier checks.</p>
 <h5 class="doc-sub" id="day3-environment">Environment variables</h5><div class="day4-table-wrap"><table class="day4-table native-notes-table"><thead><tr><th>Variable</th><th>Where set</th><th>Value</th><th>Purpose</th></tr></thead><tbody><tr><td data-label="Variable">PYTHONPATH</td><td data-label="Where set">run_gui.sh</td><td data-label="Value">unset</td><td data-label="Purpose">Cleared to avoid ROS 2 path contamination</td></tr><tr><td data-label="Variable">CONDA_PREFIX</td><td data-label="Where set">run_gui.sh</td><td data-label="Value">[Machine-specific home path covered for privacy]</td><td data-label="Purpose">Points to the active Conda environment</td></tr><tr><td data-label="Variable">PATH</td><td data-label="Where set">run_gui.sh</td><td data-label="Value">$CONDA_PREFIX/bin:$PATH</td><td data-label="Purpose">Prepends Conda's Python binaries</td></tr><tr><td data-label="Variable">LD_LIBRARY_PATH</td><td data-label="Where set">run_gui.sh &amp; HOW_TO_RUN.md</td><td data-label="Value">$CONDA_PREFIX/lib:...</td><td data-label="Purpose">Prevents CXXABI_1.3.15 not found errors by prioritizing Conda's C++ libs</td></tr><tr><td data-label="Variable">DISPLAY</td><td data-label="Where set">run_gui.sh &amp; HOW_TO_RUN.md</td><td data-label="Value">:1 (default)</td><td data-label="Purpose">Required for Tkinter GUI and Rerun to find the X display</td></tr></tbody></table></div>
