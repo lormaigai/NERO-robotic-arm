@@ -169,8 +169,6 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 <details class="log-entry" id="day-2026-11-13" open>
 <summary class="log-toggle" data-reveal><span class="log-date">13 <em>Nov</em> 2026</span><span class="log-tags"><span>D3</span><span>Session notes</span></span><svg class="log-chevron" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
 <div class="log-body"><div class="log-inner"><section class="section"><h3 class="subhead" data-reveal>Our Day 3 document</h3>
-<p class="section-note" data-reveal>The original 10-page session document, in its supplied order and layout, with the original wording and equations; screenshot content is now native text. One machine-specific home path is covered for privacy. This is our working document: its research attributions, thresholds, dataset counts and proposed checks are not independently verified experiment results. <a class="cite" href="assets/day3-notes/day3-notes.pdf">[8]</a></p>
-<p class="subhead-note" data-reveal>The document below is the same document set directly on the page - original wording, bullet points and equations, with screenshot content transcribed into normal text, tables and LaTeX equations. <a href="assets/day3-notes/day3-notes.pdf" target="_blank" rel="noopener">Open the original document (PDF)</a>. <a href="ideation.html#day-2026-11-13">Today's photos and video</a> remain under Ideation &amp; development.</p>
 <div class="day3-doc">
 <h4 class="doc-h">Environments</h4>
 <ul class="doc-dash">
@@ -422,7 +420,7 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 <div class="qd-arrow" aria-hidden="true">&darr;</div>
 <div class="qd-node"><strong>Optimal Training Coreset</strong>(Maximizes Coverage, Minimizes Redundancy &amp; Jitter)</div>
 </div>
-<p class="doc-note">Methodology notes transcribed from the supplied screenshots below. Their stated benefits and operator rules are proposed guidance, not results verified by the training run.</p>
+
 
 <h5 class="doc-sub" id="day4-quality-score">Step 1: Score Every Demonstration by Execution Quality (\(Q\))</h5>
 <p>Every valid episode receives a scalar <strong>Quality Score \(Q\in[0,1]\)</strong> combining three physical metrics:</p>
@@ -444,7 +442,7 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 </ul>
 <p><strong>Composite Quality Score:</strong></p>
 <div class="doc-eq doc-eq-math">\[Q(E)=0.4\cdot S_{\mathrm{path}}+0.3\cdot S_{\mathrm{smooth}}+0.3\cdot S_{\mathrm{grasp}}\]</div>
-<p class="doc-note">These are the proposed scoring rules shown in the methodology notes. The screenshots do not show the scoring implementation or its handling of edge cases, such as zero start-to-end displacement or normalization bounds.</p>
+
 
 <h5 class="doc-sub">Step 2: Define Coverage Bins (Ensuring Diversity)</h5>
 <p>To avoid overfitting to one specific setup, group demonstrations across physical dimensions:</p>
@@ -467,7 +465,7 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 <li>It eliminates <strong>redundancy</strong> (doesn't waste 80% of model capacity on the center bin).</li>
 <li>It feeds the model only the <strong>smoothest, most direct examples</strong> for each position.</li>
 </ul>
-<p class="doc-note">The benefits above reproduce the source notes' claims. Actual coverage depends on which bins contain valid demonstrations; the screenshots do not establish complete workspace coverage or an advantage over random sampling in an evaluation.</p>
+
 
 <h5 class="doc-sub">Step 4: Single-Operator Consistency (Critical for ACT / CVAE)</h5>
 <p>Because ACT models human operator style into a latent variable \(z\):</p>
@@ -475,7 +473,7 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 <li><strong>Rule:</strong> If two different human operators collected data for the same coverage bin, <strong>do not mix their trajectories</strong>.</li>
 <li>Choose the operator who demonstrated lower mean tortuosity and smoother jerk. Mixing operators on the same task condition blurs the CVAE prior, causing the robot to waffle between two strategies at inference time.</li>
 </ul>
-<p class="doc-note">This is a proposed selection rule, not a comparison verified by the supplied training screenshot.</p>
+
 
 <h5 class="doc-sub">Glossary</h5>
 <div class="day4-table-wrap"><table class="day4-table">
@@ -499,7 +497,7 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 <tr><td>Mean quality score, kept episodes</td><td>44.2 / 100</td></tr>
 </tbody></table></div>
 <p>The selected episode specification was saved to <code>datasets/nero_conveyor_sort/curated_coreset.json</code>. The output provides the curated episode list for LeRobot's <code>--dataset.episodes</code> argument.</p>
-<p class="doc-note">The script output reports scores out of 100, while the methodology defines Q on a 0&ndash;1 scale. The screenshots do not show how the implementation maps between them or confirm that every proposed coverage/operator rule was applied. The score difference alone does not establish better robot performance.</p>
+
 
 <section class="source-text" id="coreset-output"><h5 class="doc-sub">Full coreset output and selected episode list</h5><p class="source-line">RECOMMENDED TRAINING CORESET (75% Best Demonstrations)</p><p class="source-line">Total Evaluated Episodes : 160</p><p class="source-line">Curated Keep Episodes    : 120 episodes</p><p class="source-line">Pruned Outlier Episodes  : 40 episodes</p><p class="source-line">Mean Quality Score (All) : 43.5 / 100</p><p class="source-line">Mean Quality Score (Keep): 44.2 / 100</p><p class="source-line">Pass this curated episode list into LeRobot training:</p><p class="source-line">--dataset.episodes=&quot;[0, 1, 2, 3, 4, 5, 7, 10, 11, 13, 14, 15, 16, 18, 19, 20, 22, 24, 25, 27, 28, 29, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 44, 45, 46, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 65, 66, 67, 68, 69, 70, 71, 72, 73, 75, 76, 77, 78, 79, 84, 85, 86, 87, 88, 89, 90, 93, 94, 95, 96, 97, 98, 99, 101, 102, 103, 104, 105, 106, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 121, 122, 123, 124, 126, 127, 129, 131, 133, 134, 135, 137, 139, 141, 145, 151, 152, 153, 154, 155, 156, 158, 159]&quot;</p><p class="source-line">Saved curated episode spec to:</p><p class="source-line">/home/sc1/Desktop/RDP2026Nov/datasets/nero_conveyor_sort/curated_coreset.json</p></section>
 
@@ -516,8 +514,8 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 <tr><td>Displayed learning rate</td><td>\(1\times10^{-5}\)</td></tr>
 <tr><td>Output directory</td><td><code>outputs/train/act_nero_conveyor_sort_curated</code></td></tr>
 </tbody></table></div>
-<p class="doc-note">The capture shows early training progress, not completion of all 60,000 steps. It does not include a held-out evaluation, a success rate, or a before/after task-performance comparison.</p>
-<section class="source-text" id="training-log"><h5 class="doc-sub">Visible training configuration and run log</h5><p class="source-line">Visible configuration (the screenshot starts partway through the configuration):</p><p class="source-line">&#x27;optimizer_lr_backbone&#x27;: 1e-05,</p><p class="source-line">&#x27;optimizer_weight_decay&#x27;: 0.0001,</p><p class="source-line">&#x27;output_features&#x27;: {},</p><p class="source-line">&#x27;pre_norm&#x27;: False,</p><p class="source-line">&#x27;pretrained_backbone_weights&#x27;: &#x27;ResNet18_Weights.IMAGENET1K_V1&#x27;,</p><p class="source-line">&#x27;pretrained_path&#x27;: None,</p><p class="source-line">&#x27;pretrained_revision&#x27;: None,</p><p class="source-line">&#x27;private&#x27;: None,</p><p class="source-line">&#x27;push_to_hub&#x27;: False,</p><p class="source-line">&#x27;replace_final_stride_with_dilation&#x27;: False,</p><p class="source-line">&#x27;repo_id&#x27;: None,</p><p class="source-line">&#x27;tags&#x27;: None,</p><p class="source-line">&#x27;temporal_ensemble_coeff&#x27;: None,</p><p class="source-line">&#x27;type&#x27;: &#x27;act&#x27;,</p><p class="source-line">&#x27;use_amp&#x27;: True,</p><p class="source-line">&#x27;use_peft&#x27;: False,</p><p class="source-line">&#x27;use_vae&#x27;: True,</p><p class="source-line">&#x27;vision_backbone&#x27;: &#x27;resnet18&#x27;},</p><p class="source-line">&#x27;prefetch_factor&#x27;: 4,</p><p class="source-line">&#x27;rename_map&#x27;: {},</p><p class="source-line">&#x27;resume&#x27;: False,</p><p class="source-line">&#x27;reward_model&#x27;: None,</p><p class="source-line">&#x27;sample_weighting&#x27;: None,</p><p class="source-line">&#x27;save_checkpoint&#x27;: True,</p><p class="source-line">&#x27;save_checkpoint_to_hub&#x27;: False,</p><p class="source-line">&#x27;save_freq&#x27;: 10000,</p><p class="source-line">&#x27;scheduler&#x27;: None,</p><p class="source-line">&#x27;seed&#x27;: 1000,</p><p class="source-line">&#x27;steps&#x27;: 60000,</p><p class="source-line">&#x27;tolerance_s&#x27;: 0.0001,</p><p class="source-line">&#x27;use_policy_training_preset&#x27;: True,</p><p class="source-line">&#x27;wandb&#x27;: {&#x27;add_tags&#x27;: True,</p><p class="source-line">&#x27;disable_artifact&#x27;: False,</p><p class="source-line">&#x27;enable&#x27;: False,</p><p class="source-line">&#x27;entity&#x27;: None,</p><p class="source-line">&#x27;mode&#x27;: None,</p><p class="source-line">&#x27;notes&#x27;: None,</p><p class="source-line">&#x27;project&#x27;: &#x27;lerobot&#x27;,</p><p class="source-line">&#x27;run_id&#x27;: None}}</p><p class="source-line">2026-11-16 15:24:39 Logs will be saved locally.</p><p class="source-line">2026-11-16 15:24:39 Creating dataset</p><p class="source-line">2026-11-16 15:24:40 Creating policy</p><p class="source-line">2026-11-16 15:24:40 Creating optimizer and scheduler</p><p class="source-line">2026-11-16 15:24:40 Output dir: outputs/train/act_nero_conveyor_sort_curated</p><p class="source-line">2026-11-16 15:24:40 cfg.steps=60000 (60K)</p><p class="source-line">2026-11-16 15:24:40 dataset.num_frames=107834 (108K)</p><p class="source-line">2026-11-16 15:24:40 dataset.num_episodes=120</p><p class="source-line">2026-11-16 15:24:40 Effective batch size: 4 x 1 = 4</p><p class="source-line">2026-11-16 15:24:40 num_learnable_params=51601288 (52M)</p><p class="source-line">2026-11-16 15:24:40 num_total_params=51601288 (52M)</p><p class="source-line">2026-11-16 15:24:40 Start offline training on a fixed dataset, with effective batch size: 4</p><p class="source-line">2026-11-16 15:24:49 step:200 smpl:800 ep:1 epch:0.01 loss:7.938 grdn:221.343 lr:1.0e-05 updt_s:0.030 data_s:0.015 smp/s:90 mem_gb:2.16 l1_loss:0.556 kld_loss:0.738</p><p class="source-line">Visible progress: 197/60000 and 285/60000 (0%).</p></section>
+
+
 </div>
 </section>
 </div></div></details>
@@ -550,4 +548,4 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 
 <script src="script.js"></script>
 </body>
-</html>
+  </html>
