@@ -504,6 +504,41 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 </section>
 </div></div></details>
 
+
+<details class="log-entry day4-entry" id="day-5" open>
+<summary class="log-toggle" data-reveal><span class="log-date">17 <em>Nov</em> 2026</span><span class="log-tags"><span>D5</span><span>ACT demonstration recording</span></span><svg class="log-chevron" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+<div class="log-body"><div class="log-inner"><section class="section">
+<p>The best practices for recording ACT (Action Chunking with Transformers) demonstrations focus on enforcing consistent pacing, uniform approach paths, clean start/end boundaries, and stable visual conditions. Because ACT is trained from scratch using an L1 reconstruction loss over fixed-length action chunks, any inconsistency in human timing, trajectory shape, or background lighting directly degrades policy accuracy.</p>
+<h5 class="doc-sub">1. Trajectory &amp; Motion Consistency</h5>
+<ul class="doc-dash">
+<li><strong>Use a single, agreed-upon approach path.</strong> Operators must approach and grasp objects from the same angle and height every time. Because ACT minimizes L1 loss, mixing left-side and right-side approaches causes the model to average them into a failed middle path.</li>
+<li><strong>Keep movement speed steady and predictable.</strong> Operators should move at a smooth, consistent pace across all episodes. ACT predicts a fixed number of future steps (e.g., 50–100 frames) and blends them via temporal ensembling; mixing fast and slow episodes breaks this timing alignment and causes arm jitter.</li>
+<li><strong>Eliminate hesitation and mid-episode pauses.</strong> Avoid stopping mid-air to adjust your grip or think about the next step. ACT memorizes pauses as valid target actions, which often causes the deployed robot to stall indefinitely in that exact pose.</li>
+</ul>
+<h5 class="doc-sub">2. Episode Boundaries &amp; Recovery Rules</h5>
+<ul class="doc-dash">
+<li><strong>Start moving immediately and stop cleanly.</strong> Begin the task within a fraction of a second of starting the recording, and end the episode immediately once the goal is reached. Long idle stretches at the start or end teach the policy to stay still.</li>
+<li><strong>Delete failed or clumsy episodes rather than correcting mid-run.</strong> If an operator drops an object or bumps an obstacle, discard that episode instead of awkwardly recovering. Unless you are intentionally training recovery behaviors across many episodes, rare recovery motions confuse the action-chunk predictor.</li>
+<li><strong>Reset the robot to a consistent home pose.</strong> Always return the arm to the exact same starting joint configuration before recording the next episode. This prevents the first action chunk from having to guess wildly different initial joint trajectories.</li>
+</ul>
+<h5 class="doc-sub">3. Spatial &amp; Visual Environment Setup</h5>
+<ul class="doc-dash">
+<li><strong>Vary object positions systematically across the workspace.</strong> Do not place the target object in the exact same spot every time, or ACT will memorize blind joint coordinates instead of using camera feedback. Move the object across the full intended workspace in a grid or random pattern so the vision encoder learns to track it.</li>
+<li><strong>Lock down cameras, lighting, and backgrounds.</strong> Tape down tripods, block shifting sunlight, and keep the background free of moving people or clutter. Because ACT’s ResNet vision backbone is trained from scratch without internet-scale pretraining, sudden shadows or slight camera bumps easily break visual recognition.</li>
+<li><strong>Ensure clear wrist and overhead camera views.</strong> Position at least one static third-person camera to capture global context and one wrist-mounted camera for close-up alignment. If the robot arm blocks the only camera right before grasping, ACT loses visual feedback at the most critical moment.</li>
+</ul>
+<h5 class="doc-sub">Summary Checklist</h5>
+<div class="day4-table-wrap"><table class="day4-table native-notes-table">
+<thead><tr><th>Practice</th><th>Why It Matters for ACT</th></tr></thead>
+<tbody>
+<tr><td data-label="Practice">Consistent approach angle</td><td data-label="Why It Matters for ACT">Prevents L1 loss from averaging opposite paths into collisions</td></tr>
+<tr><td data-label="Practice">Uniform episode duration</td><td data-label="Why It Matters for ACT">Keeps fixed action chunks and temporal ensembling synchronized</td></tr>
+<tr><td data-label="Practice">No idle start/end frames</td><td data-label="Why It Matters for ACT">Stops the policy from freezing before or after motion</td></tr>
+<tr><td data-label="Practice">Systematic object placement</td><td data-label="Why It Matters for ACT">Forces reliance on vision rather than blind trajectory memorization</td></tr>
+<tr><td data-label="Practice">Fixed lighting &amp; camera mounts</td><td data-label="Why It Matters for ACT">Protects the from-scratch vision encoder from visual distribution shifts</td></tr>
+</tbody></table></div>
+</section></div></div></details>
+
 </main>
 
 <footer class="footer">
@@ -532,4 +567,4 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 
 <script src="script.js"></script>
 </body>
-  </html>
+</html>
