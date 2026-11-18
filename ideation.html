@@ -9,6 +9,22 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<style>
+/* Proposed pipeline diagram, scoped to the 18 Nov entry. */
+.pipe { display:grid; max-width:760px; margin:0 auto 28px; }
+.pipe-stage { background:var(--stripe); border:1px solid var(--powder); border-radius:var(--radius); padding:18px 16px; display:grid; gap:10px; }
+.pipe-stage-name { display:flex; align-items:center; gap:10px; margin:0 0 4px; font-weight:600; font-size:15px; color:var(--blue-deep); }
+.pipe-stage-name span { display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:999px; background:var(--blue-deep); color:var(--paper); font-size:13px; font-weight:600; flex:none; }
+.pipe-node { background:var(--paper); border:1px solid var(--powder); border-radius:12px; padding:12px 14px; font-size:13.5px; line-height:1.55; color:var(--ink-soft); text-align:center; }
+.pipe-node strong { display:block; color:var(--ink); font-size:14px; margin-bottom:2px; }
+.pipe-decision { border-style:dashed; }
+.pipe-tag { display:block; font-style:normal; font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--blue); margin-bottom:4px; }
+.pipe-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; }
+.pipe-arrow { text-align:center; color:var(--blue); font-size:20px; line-height:1; padding:8px 0; }
+.pipe-arrow-label { font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; margin-left:6px; vertical-align:middle; }
+.pipe-loop { text-align:center; font-size:12.5px; color:var(--ink-soft); margin:2px 0 0; }
+.pipe-loop::before { content:"\21A9\00a0"; color:var(--blue); }
+</style>
 </head>
 <body>
 
@@ -102,6 +118,85 @@
 <summary class="log-toggle" data-reveal><span class="log-date">13 <em>Nov</em> 2026</span><span class="log-tags"><span>D3</span><span>Working proposal</span></span><svg class="log-chevron" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
 <div class="log-body"><div class="log-inner"><section class="section"><p class="section-note" data-reveal>The Day 3 notes, including the original five-stage plan and mathematical notation, are preserved without rewriting under <a href="learnt.html#day-2026-11-13">What we learnt → 13 Nov / D3</a>.<a class="cite" href="learnt.html#day-2026-11-13">[8]</a></p><h3 class="subhead" data-reveal>In the lab · Day 3</h3>
 <p class="subhead-note" data-reveal>Two photos and a short clip from today. Captions describe what is visible, not a measured success rate. Screen content and incidental identifiers are covered; the published clip has no audio.</p><div class="lab-grid"><figure class="lab-item" data-reveal><img src="assets/day3-arm.jpg" alt="Two robotic arms on the lab bench near an orange block and a small box" loading="lazy"><figcaption>Arm setup beside an orange block and a small box.</figcaption></figure><figure class="lab-item" data-reveal><img src="assets/day3-bench.jpg" alt="Robotic arm and mini conveyor with coloured blocks on the shared lab bench" loading="lazy"><figcaption>Bench view with the arm, mini conveyor and coloured blocks.</figcaption></figure><figure class="lab-item" data-reveal><video src="assets/day3-lab.mp4" poster="assets/day3-lab-poster.jpg" controls muted playsinline preload="none"></video><figcaption>Short clip of the handheld arm being moved while the bench arm moves nearby. Audio removed for lab privacy. This is session footage, not an autonomous-policy evaluation.</figcaption></figure></div></section></div></div></details>
+
+<details class="log-entry" id="day-2026-11-18" open>
+<summary class="log-toggle" data-reveal><span class="log-date">18 <em>Nov</em> 2026</span><span class="log-tags"><span>D6</span><span>Proposed pipeline</span></span><svg class="log-chevron" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+<div class="log-body"><div class="log-inner"><section class="section">
+<h3 class="subhead" data-reveal>Proposed overall pipeline</h3>
+<p class="subhead-note" data-reveal>Our planned end-to-end pipeline, from collecting demonstrations to deploying and retraining. This is the proposed design: not every stage is implemented yet.</p>
+<div class="pipe">
+  <div class="pipe-stage">
+    <p class="pipe-stage-name"><span>1</span>Data Collection</p>
+    <div class="pipe-node"><strong>Teleoperation</strong>Leader-follower arms</div>
+    <div class="pipe-arrow">&darr;</div>
+    <div class="pipe-node"><strong>Record synchronized data</strong></div>
+    <div class="pipe-arrow">&darr;</div>
+    <div class="pipe-grid">
+      <div class="pipe-node"><strong>RGB images</strong>Wrist + overhead cameras</div>
+      <div class="pipe-node"><strong>Joint positions</strong>Encoders &amp; gripper state</div>
+      <div class="pipe-node"><strong>Force / torque</strong>Sensor data</div>
+      <div class="pipe-node"><strong>Language annotations</strong>For VLA</div>
+    </div>
+  </div>
+  <div class="pipe-arrow">&darr;</div>
+  <div class="pipe-stage">
+    <p class="pipe-stage-name"><span>2</span>Data Preprocessing</p>
+    <div class="pipe-node"><strong>Store</strong>HDF5 / RLDS format</div>
+    <div class="pipe-arrow">&darr;</div>
+    <div class="pipe-grid">
+      <div class="pipe-node"><strong>Images</strong>Resize, normalize, augment</div>
+      <div class="pipe-node"><strong>Actions</strong>Normalize, chunk (size ~100)</div>
+      <div class="pipe-node"><strong>Labels</strong>Clean &amp; validate language annotations</div>
+    </div>
+  </div>
+  <div class="pipe-arrow">&darr;</div>
+  <div class="pipe-stage">
+    <p class="pipe-stage-name"><span>3</span>Model Training</p>
+    <div class="pipe-node pipe-decision"><strong>Training target?</strong></div>
+    <div class="pipe-grid">
+      <div class="pipe-node"><span class="pipe-tag">Current</span><strong>ACT policy</strong>CVAE + Transformer</div>
+      <div class="pipe-node"><span class="pipe-tag">Future</span><strong>VLA model</strong>OpenVLA, Octo, RT-2</div>
+    </div>
+  </div>
+  <div class="pipe-arrow">&darr;</div>
+  <div class="pipe-stage">
+    <p class="pipe-stage-name"><span>4</span>Model Validation</p>
+    <div class="pipe-node"><strong>Test in simulation</strong>MuJoCo, Isaac Sim</div>
+    <div class="pipe-arrow">&darr;</div>
+    <div class="pipe-node pipe-decision"><strong>Validation passed?</strong></div>
+    <p class="pipe-loop">No: back to preprocessing</p>
+  </div>
+  <div class="pipe-arrow">&darr;<span class="pipe-arrow-label">Yes</span></div>
+  <div class="pipe-stage">
+    <p class="pipe-stage-name"><span>5</span>Deployment</p>
+    <div class="pipe-node"><strong>Deploy</strong>To edge controller / onboard compute</div>
+  </div>
+  <div class="pipe-arrow">&darr;</div>
+  <div class="pipe-stage">
+    <p class="pipe-stage-name"><span>6</span>Real-Time Inference</p>
+    <div class="pipe-node"><strong>Real-time action prediction</strong></div>
+    <div class="pipe-arrow">&darr;</div>
+    <div class="pipe-grid">
+      <div class="pipe-node"><strong>Grasp planning</strong>&amp; path planning</div>
+      <div class="pipe-node"><strong>Object detection</strong>&amp; pose estimation</div>
+    </div>
+    <div class="pipe-arrow">&darr;</div>
+    <div class="pipe-node"><strong>Robotic arm executes task</strong></div>
+  </div>
+  <div class="pipe-arrow">&darr;</div>
+  <div class="pipe-stage">
+    <p class="pipe-stage-name"><span>7</span>Feedback &amp; Retraining</p>
+    <div class="pipe-node"><strong>Log performance</strong>Success rate, errors</div>
+    <div class="pipe-arrow">&darr;</div>
+    <div class="pipe-node pipe-decision"><strong>Performance OK?</strong></div>
+    <div class="pipe-grid">
+      <div class="pipe-node"><span class="pipe-tag">Yes</span><strong>Scale</strong>Collect more tasks &amp; data</div>
+      <div class="pipe-node"><span class="pipe-tag">No</span><strong>Retrain</strong>Refine data &amp; retrain model</div>
+    </div>
+    <p class="pipe-loop">Both paths loop back to data collection</p>
+  </div>
+</div>
+</section></div></div></details>
 
 </main>
 
