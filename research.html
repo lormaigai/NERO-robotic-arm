@@ -9,6 +9,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<script>
+MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 </head>
 <body>
 
@@ -87,7 +91,7 @@
 <li>Dual-system design: a vision-language model (System 2) reasons about the scene and instruction; a diffusion transformer (System 1) turns the plan into continuous actions.<a class="cite" href="#ref-5">[5]</a></li>
 <li>Cross-embodiment: one set of weights adapts to different robots through post-training on your own demos.<a class="cite" href="#ref-5">[5]</a></li>
 <li>Trained on a large humanoid dataset plus synthetic and internet-video data; part of the dataset is open on Hugging Face.<a class="cite" href="#ref-5">[5]</a></li>
-<li>NVIDIA reports GR00T N1 2B averaging 76.8% on its own benchmark suite (vendor-reported; different tasks from the other two papers).<a class="cite" href="#ref-5">[5]</a></li>
+<li>NVIDIA reports GR00T N1 2B averaging 76.8% success on real-world GR-1 humanoid tasks with full training data (vendor-reported; different tasks from the other two papers).<a class="cite" href="#ref-5">[5]</a></li>
 <li>2B+ parameters, far larger than ACT's ~80M, so running or fine-tuning it needs correspondingly more compute.<a class="cite" href="#ref-5">[5]</a><a class="cite" href="#ref-3">[3]</a></li>
 </ul>
 <a class="policy-link" href="https://developer.nvidia.com/blog/accelerate-generalist-humanoid-robot-development-with-nvidia-isaac-gr00t-n1/" rel="noopener" target="_blank">Source ↗</a>
@@ -112,17 +116,18 @@
 <div class="card table-card" data-reveal="">
 <table class="compare">
 <thead>
-<tr><th>Dimension</th><th>Your Script (nero_quality_scorer.py)</th><th>Academic Baseline (e.g., ALOHA Unleashed &amp; DataMIL)</th><th>Community / Open-Source Practice (e.g., LeRobot/Calibra ecosystem)</th></tr>
+<tr><th>Dimension</th><th>Your Script (nero_quality_scorer.py)</th><th>Academic Baseline (e.g., ALOHA Unleashed &amp; DataMIL)</th><th>Community / Open-Source Practice (team working notes, unverified)</th></tr>
 </thead>
 <tbody>
 <tr><td>Core Philosophy</td><td>Heuristic-driven physical metrics (Jerk, Tortuosity, Grasp) computed locally.</td><td>Scale-based and duration-focused filtering combined with model-based dataset valuation.</td><td>Pipeline-driven observability focusing on hard failure extraction and diversity-aware retention.</td></tr>
-<tr><td>Smoothness Metric</td><td>Discrete third-order finite difference jerk (3q/t3).</td><td>Episode duration thresholding (percentile-based time cuts as a proxy for operator hesitation).</td><td>SPARC (Spectral Arc Length) or LDLJ (Log Dimensionless Jerk) to mitigate high-frequency encoder noise.</td></tr>
-<tr><td>Path Efficiency</td><td>Joint-space tortuosity (ArcLength/NetDisplacement).</td><td>Manual protocol-level hygiene during teleoperation (eliminating wandering runs upfront).</td><td>Task-phase segmentation (evaluating path efficiency up to keyframes rather than global start-to-end).</td></tr>
-<tr><td>Coreset Selection</td><td>Top-K Quality Ranking (Retaining top 75% by composite score).</td><td>Stratified task-variant pooling (balancing clean "Easy" and diverse "Messy" data splits).</td><td>Quality-Weighted Diversity Sampling (Combining quality filtering with farthest-point/k-center spatial coverage to avoid mode collapse).</td></tr>
+<tr><td>Smoothness Metric</td><td>Discrete third-order finite difference jerk (\(\Delta^{3} q / \Delta t^{3}\)).</td><td>Episode duration thresholding (percentile-based time cuts as a proxy for operator hesitation).</td><td>SPARC (Spectral Arc Length) or LDLJ (Log Dimensionless Jerk) to mitigate high-frequency encoder noise.</td></tr>
+<tr><td>Path Efficiency</td><td>Joint-space tortuosity (\(\text{arc length} / \text{net displacement}\)).</td><td>Manual protocol-level hygiene during teleoperation (eliminating wandering runs upfront).</td><td>Task-phase segmentation (evaluating path efficiency up to keyframes rather than global start-to-end).</td></tr>
+<tr><td>Coreset Selection</td><td>Top-K Quality Ranking (Retaining top 75% by composite score).</td><td>Stratified task-variant pooling (balancing clean "Easy" and diverse "Messy" data splits).</td><td>Quality-Weighted Diversity Sampling (combining quality filtering with coverage-oriented selection to avoid mode collapse).</td></tr>
 <tr><td>Handling Recoveries</td><td>Penalizes trajectory direction reversals (can mistakenly drop successful recoveries).</td><td>Explicitly preserves recovery behaviors (e.g., re-grasping a dropped object) to aid policy self-correction.</td><td></td></tr>
 </tbody>
 </table>
 </div>
+<p class="subhead-note" data-reveal="">Source: the team's research-thread working notes<a class="cite" href="#ref-1">[1]</a>. The named academic baselines are published methods: ALOHA Unleashed filters episodes by duration percentiles<a class="cite" href="#ref-9">[9]</a> and DataMIL selects data by model-based valuation<a class="cite" href="#ref-10">[10]</a>. The other cell summaries, including the community-practice column and the nero_quality_scorer.py column, are working characterizations that are not yet cited cell by cell.</p>
 <h3 class="subhead" data-reveal="">Research papers &amp; references</h3>
 <p class="subhead-note" data-reveal="">Sources for the policy comparison and environment-variables notes. Bracketed numbers throughout the site point to these references.</p>
 <ol class="refs">
@@ -131,7 +136,9 @@
 <li data-reveal="" id="ref-3" style="--i:2"><a href="https://huggingface.co/docs/lerobot/main/en/act" rel="noopener" target="_blank">ACT in Hugging Face LeRobot</a><span>Docs: training and evaluation commands for ACT.</span></li>
 <li data-reveal="" id="ref-4" style="--i:3"><a href="https://arxiv.org/pdf/2303.04137" rel="noopener" target="_blank">Diffusion Policy: Visuomotor Policy Learning via Action Diffusion</a><span>arXiv:2303.04137.</span></li>
 <li data-reveal="" id="ref-5" style="--i:4"><a href="https://developer.nvidia.com/blog/accelerate-generalist-humanoid-robot-development-with-nvidia-isaac-gr00t-n1/" rel="noopener" target="_blank">NVIDIA Isaac GR00T N1 technical blog</a><span>Architecture and benchmark numbers for GR00T N1.</span></li>
-<li data-reveal="" id="ref-6" style="--i:0"><a href="https://12factor.net/config" rel="noopener" target="_blank">The Twelve-Factor App: Config</a><span>Why config belongs in environment variables, and why env vars keep secrets out of the repo.</span></li><li data-reveal="" id="ref-7" style="--i:1"><a href="https://en.wikipedia.org/wiki/Deployment_environment" rel="noopener" target="_blank">Deployment environment (Wikipedia)</a><span>The local, development, testing, staging and production tiers.</span></li></ol>
+<li data-reveal="" id="ref-6" style="--i:0"><a href="https://12factor.net/config" rel="noopener" target="_blank">The Twelve-Factor App: Config</a><span>Why config belongs in environment variables, and why env vars keep secrets out of the repo.</span></li><li data-reveal="" id="ref-7" style="--i:1"><a href="https://en.wikipedia.org/wiki/Deployment_environment" rel="noopener" target="_blank">Deployment environment (Wikipedia)</a><span>The local, development, testing, staging and production tiers.</span></li>
+<li data-reveal="" id="ref-9" style="--i:7"><a href="https://aloha-unleashed.github.io/" rel="noopener" target="_blank">ALOHA Unleashed: A Simple Recipe for Robot Dexterity</a><span>Duration-percentile episode filtering ablations (Section 4.3).</span></li>
+<li data-reveal="" id="ref-10" style="--i:8"><a href="https://github.com/UT-Austin-RobIn/datamil" rel="noopener" target="_blank">DataMIL: Selecting Data for Robot Imitation Learning with Datamodels</a><span>Model-based data valuation and selection for imitation learning.</span></li></ol>
 </section>
 
 </main>
