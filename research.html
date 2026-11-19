@@ -91,7 +91,7 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 <li>Dual-system design: a vision-language model (System 2) reasons about the scene and instruction; a diffusion transformer (System 1) turns the plan into continuous actions.<a class="cite" href="#ref-5">[5]</a></li>
 <li>Cross-embodiment: one set of weights adapts to different robots through post-training on your own demos.<a class="cite" href="#ref-5">[5]</a></li>
 <li>Trained on a large humanoid dataset plus synthetic and internet-video data; part of the dataset is open on Hugging Face.<a class="cite" href="#ref-5">[5]</a></li>
-<li>NVIDIA reports GR00T N1 2B averaging 76.8% on its own benchmark suite (vendor-reported; different tasks from the other two papers).<a class="cite" href="#ref-5">[5]</a></li>
+<li>NVIDIA reports GR00T N1 2B averaging 76.8% success on real-world GR-1 humanoid tasks with full training data (vendor-reported; different tasks from the other two papers).<a class="cite" href="#ref-5">[5]</a></li>
 <li>2B+ parameters, far larger than ACT's ~80M, so running or fine-tuning it needs correspondingly more compute.<a class="cite" href="#ref-5">[5]</a><a class="cite" href="#ref-3">[3]</a></li>
 </ul>
 <a class="policy-link" href="https://developer.nvidia.com/blog/accelerate-generalist-humanoid-robot-development-with-nvidia-isaac-gr00t-n1/" rel="noopener" target="_blank">Source ↗</a>
@@ -116,13 +116,13 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 <div class="card table-card" data-reveal="">
 <table class="compare">
 <thead>
-<tr><th>Dimension</th><th>Your Script (nero_quality_scorer.py)</th><th>Academic Baseline (e.g., ALOHA Unleashed &amp; DataMIL)</th><th>Community / Open-Source Practice (e.g., LeRobot/Calibra ecosystem)</th></tr>
+<tr><th>Dimension</th><th>Your Script (nero_quality_scorer.py)</th><th>Academic Baseline (e.g., ALOHA Unleashed &amp; DataMIL)</th><th>Community / Open-Source Practice (team working notes, unverified)</th></tr>
 </thead>
 <tbody>
 <tr><td>Core Philosophy</td><td>Heuristic-driven physical metrics (Jerk, Tortuosity, Grasp) computed locally.</td><td>Scale-based and duration-focused filtering combined with model-based dataset valuation.</td><td>Pipeline-driven observability focusing on hard failure extraction and diversity-aware retention.</td></tr>
 <tr><td>Smoothness Metric</td><td>Discrete third-order finite difference jerk (\(\Delta^{3} q / \Delta t^{3}\)).</td><td>Episode duration thresholding (percentile-based time cuts as a proxy for operator hesitation).</td><td>SPARC (Spectral Arc Length) or LDLJ (Log Dimensionless Jerk) to mitigate high-frequency encoder noise.</td></tr>
 <tr><td>Path Efficiency</td><td>Joint-space tortuosity (\(\text{arc length} / \text{net displacement}\)).</td><td>Manual protocol-level hygiene during teleoperation (eliminating wandering runs upfront).</td><td>Task-phase segmentation (evaluating path efficiency up to keyframes rather than global start-to-end).</td></tr>
-<tr><td>Coreset Selection</td><td>Top-K Quality Ranking (Retaining top 75% by composite score).</td><td>Stratified task-variant pooling (balancing clean "Easy" and diverse "Messy" data splits).</td><td>Quality-Weighted Diversity Sampling (Combining quality filtering with farthest-point/k-center spatial coverage to avoid mode collapse).</td></tr>
+<tr><td>Coreset Selection</td><td>Top-K Quality Ranking (Retaining top 75% by composite score).</td><td>Stratified task-variant pooling (balancing clean "Easy" and diverse "Messy" data splits).</td><td>Quality-Weighted Diversity Sampling (combining quality filtering with coverage-oriented selection to avoid mode collapse).</td></tr>
 <tr><td>Handling Recoveries</td><td>Penalizes trajectory direction reversals (can mistakenly drop successful recoveries).</td><td>Explicitly preserves recovery behaviors (e.g., re-grasping a dropped object) to aid policy self-correction.</td><td></td></tr>
 </tbody>
 </table>
