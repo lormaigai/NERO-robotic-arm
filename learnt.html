@@ -174,7 +174,7 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 <h4 class="doc-h">Stage 1: duration and length percentile</h4>
 <p class="doc-eq doc-eq-math">\[ \text{Reject if } T_i > Q_3 + 1.5 \times \mathrm{IQR} \]</p>
 <ul class="doc-dash">
-<li>To get the absolute best AI performance, some researchers are ruthless and delete <em>everything</em> that isn't in the fastest 50% or 75% of recordings, ensuring the AI only learns from highly confident, direct movements.</li>
+<li>To get the absolute best AI performance, some researchers are ruthless and delete <em>everything</em> that isn't in the fastest 50% or 75% of recordings, with the aim of training only on highly confident, direct movements. ALOHA Unleashed filters by episode-duration percentiles in this way.<a class="cite" href="research.html#ref-9">[9]</a></li>
 <li>building on the idea for anomaly detection but not to delete. Just flag out eg 5th n 95th percentile</li>
 </ul>
 
@@ -238,7 +238,7 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 </ul>
 <ul class="doc-disc">
 <li>a standard recording rate of 30 frames per second (FPS), a new data frame should arrive every 33.3 milliseconds (&Delta;<i>t</i><sub>nominal</sub>).</li>
-<li>equation &Delta;<i>t</i><sub><i>k</i></sub> calculates the actual time between two frames. If the gap between any two frames is larger than 50 milliseconds (\(1.5 \times \Delta t_{\mathrm{nominal}}\)), it counts as a dropped packet. If an episode has more than 3 of these dropped packets, the data is too stuttery and is thrown out.</li>
+<li>equation &Delta;<i>t</i><sub><i>k</i></sub> calculates the actual time between two frames. If the gap between any two frames is larger than 50 milliseconds (\(1.5 \times \Delta t_{\mathrm{nominal}}\)), it counts as a dropped packet. If an episode has more than 3 of these dropped packets (proposed limits: 50 ms gap, 3 packets), the episode is too stuttery and is flagged for review.</li>
 </ul>
 </li>
 <li><strong>Action-State Tracking Divergence</strong> (ensures the follower followed and did not get stuck or stalled)
@@ -250,23 +250,23 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 </ol>
 <ul class="doc-circle">
 <li>calculates the difference between the commanded action (<i>a</i>) and actual state (<i>s</i>) across all 7 joints, keeping only the largest error (<i>&delta;</i><sub><i>t</i></sub>).</li>
-<li>if that error stays above 0.30 radians for more than 10 frames in a row, it means the robot is failing to obey commands eg (it collided with an object, a motor stalled, or the connection dropped)</li>
+<li>proposed limits: if that error stays above 0.30 radians for more than 10 frames in a row, the arm is not following its commands. Possible causes include a collision, a stalled motor, or a dropped connection; the metric alone does not say which. Flag the episode for review.</li>
 </ul>
 </li>
 <li><strong>Task Completion Proxy (Gripper State Delta)</strong> verifies that the robot even opened the hands to attempt task
 <p class="doc-eq doc-eq-math">\[ \Delta g = \max_t (g_t) - \min_t (g_t) \]</p>
-<p class="doc-note">If &Delta;g &lt; 0.005 m (5 mm), the gripper never actuated. The robot did not grasp an object. Drop the episode.</p>
+<p class="doc-note">Proposed threshold: if \(\Delta g &lt; 0.005\) m (5 mm), the gripper barely moved, so the grasp was probably never attempted. Flag the episode for review; gripper travel alone cannot prove a grasp failed.</p>
 <ul class="doc-circle">
 <li>It checks the total range of motion of the robot's gripper (its "hand").</li>
 <li>subtracts the tightest the gripper ever closed ( <code>min</code> ) from the widest the gripper ever opened ( <code>max</code> ) during the entire episode.</li>
-<li>0=fail</li>
+<li>\(\Delta g = 0\) means the gripper never moved at all.</li>
 </ul>
 </li>
 <li>In manipulation/pick-and-place tasks: \( \Delta g = \max_{t}(g_t) - \min_{t}(g_t) \)</li>
 </ol>
 
 <h4 class="doc-h">Stage 5: Trajectory consistency and Multimodal Collapse Prevention</h4>
-<h5 class="doc-sub">Specific algorithmic solution: Dynamic Time Warping (DTW) medoid filtering</h5><ol class="doc-dec"><li>Resample all successful episodes in a task to a normalized length \(L=100\) using cubic spline interpolation.</li><li>For every pair of trajectories \((E_i,E_j)\), compute their pairwise <strong>Dynamic Time Warping (DTW)</strong> distance over the 7 joint angles:<p class="doc-eq doc-eq-math">\[ D(E_i,E_j)=\operatorname{DTW}\left(q_{1:L}^{(i)},q_{1:L}^{(j)}\right) \]</p></li><li>Identify the <strong>Medoid Trajectory</strong> \(E^*\) (the most representative, canonical demonstration):<p class="doc-eq doc-eq-math">\[ E^*=\arg\min_{E_i}\sum_{j=1}^{N}D(E_i,E_j) \]</p></li><li>Calculate the distance of every episode to the canonical medoid: \(d_i=D(E_i,E^*)\).</li><li><strong>Rejection rule:</strong><p class="doc-eq doc-eq-math">\[ \begin{gathered}\text{Reject }E_i\text{ if }d_i>\operatorname{Median}(d)\\+2.0\times\operatorname{MAD}(d)\end{gathered} \]</p></li></ol><p><em>Where MAD is the Median Absolute Deviation.</em></p><p>This removes outlier trajectories where an operator took an abnormal, convoluted path, leaving only consistent demonstrations that preserve a compact, un-blurred CVAE latent space.</p>
+<h5 class="doc-sub">Specific algorithmic solution: Dynamic Time Warping (DTW) medoid filtering</h5><ol class="doc-dec"><li>Resample all successful episodes in a task to a normalized length \(L=100\) using cubic spline interpolation.</li><li>For every pair of trajectories \((E_i,E_j)\), compute their pairwise <strong>Dynamic Time Warping (DTW)</strong> distance over the 7 joint angles:<p class="doc-eq doc-eq-math">\[ D(E_i,E_j)=\operatorname{DTW}\left(q_{1:L}^{(i)},q_{1:L}^{(j)}\right) \]</p></li><li>Identify the <strong>Medoid Trajectory</strong> \(E^*\) (the most representative, canonical demonstration):<p class="doc-eq doc-eq-math">\[ E^*=\arg\min_{E_i}\sum_{j=1}^{N}D(E_i,E_j) \]</p></li><li>Calculate the distance of every episode to the canonical medoid: \(d_i=D(E_i,E^*)\).</li><li><strong>Rejection rule:</strong><p class="doc-eq doc-eq-math">\[ \begin{gathered}\text{Reject }E_i\text{ if }d_i>\operatorname{Median}(d)\\+2.0\times\operatorname{MAD}(d)\end{gathered} \]</p></li></ol><p><em>Where MAD is the Median Absolute Deviation.</em></p><p>The aim is to catch likely outliers, such as demonstrations where the operator took an abnormal, convoluted path, so training keeps a more consistent set. Preserving a compact, un-blurred CVAE latent space is the intended effect, not a measured result.</p>
 <h5 class="doc-sub">Time warping</h5>
 <ul class="doc-dash">
 <li>Dynamic Time Warping (DTW) is a mathematical algorithm used to measure the similarity between two sequences (like movements, audio, or video) that happen at different speeds.
@@ -304,10 +304,10 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 </ul>
 <p class="doc-eq doc-eq-math">\[ \text{Reject } E_i \text{ if } d_i > \mathrm{Median}(d) + 2.0 \times \mathrm{MAD}(d) \]</p>
 <ul class="doc-dash">
-<li>MAD = Median Absolute Deviation (not affected by extreme values)</li>
+<li>MAD = Median Absolute Deviation (more resistant to extreme values than the mean and standard deviation, not immune to them)</li>
 <li>It calculates the distance \(d_i\) of every individual episode to the medoid.</li>
 <li>It finds the middle-ground distance across the whole dataset</li>
-<li>If a specific episode's distance is greater than the median plus twice the typical variation, it proves the human operator took a path that was <em>too</em> extreme or unusual. That episode is rejected and deleted.</li>
+<li>If a specific episode's distance is greater than the median plus twice the typical variation (a proposed 2.0 x MAD cutoff), it suggests the demonstration was unusual relative to the rest. Proposed handling: flag it for review rather than delete it automatically.</li>
 <li>*trajectory similarity vs previously unusual data</li>
 </ul>
 
@@ -484,7 +484,7 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 <section class="source-text" id="coreset-output"><h5 class="doc-sub">Full coreset output and selected episode list</h5><p class="source-line">RECOMMENDED TRAINING CORESET (75% Best Demonstrations)</p><p class="source-line">Total Evaluated Episodes : 160</p><p class="source-line">Curated Keep Episodes    : 120 episodes</p><p class="source-line">Pruned Outlier Episodes  : 40 episodes</p><p class="source-line">Mean Quality Score (All) : 43.5 / 100</p><p class="source-line">Mean Quality Score (Keep): 44.2 / 100</p><p class="source-line">Pass this curated episode list into LeRobot training:</p><p class="source-line">--dataset.episodes=&quot;[0, 1, 2, 3, 4, 5, 7, 10, 11, 13, 14, 15, 16, 18, 19, 20, 22, 24, 25, 27, 28, 29, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 44, 45, 46, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 65, 66, 67, 68, 69, 70, 71, 72, 73, 75, 76, 77, 78, 79, 84, 85, 86, 87, 88, 89, 90, 93, 94, 95, 96, 97, 98, 99, 101, 102, 103, 104, 105, 106, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 121, 122, 123, 124, 126, 127, 129, 131, 133, 134, 135, 137, 139, 141, 145, 151, 152, 153, 154, 155, 156, 158, 159]&quot;</p><p class="source-line">Saved curated episode spec to:</p><p class="source-line">/home/sc1/Desktop/RDP2026Nov/datasets/nero_conveyor_sort/curated_coreset.json</p></section>
 
 <h5 class="doc-sub">ACT training run on the curated dataset</h5>
-<p>The terminal screenshot shows LeRobot creating the dataset, policy and optimizer, then starting offline ACT training in the <code>RDP2026Nov</code> project folder.</p>
+<p>The team's terminal output from this run shows LeRobot creating the dataset, policy and optimizer, then starting offline ACT training in the <code>RDP2026Nov</code> project folder. Recorded settings:</p>
 <div class="day4-table-wrap"><table class="day4-table">
 <thead><tr><th>Setting</th><th>Observed value</th></tr></thead>
 <tbody>
