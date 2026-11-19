@@ -9,6 +9,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<script>
+MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 </head>
 <body>
 
@@ -116,8 +120,8 @@
 </thead>
 <tbody>
 <tr><td>Core Philosophy</td><td>Heuristic-driven physical metrics (Jerk, Tortuosity, Grasp) computed locally.</td><td>Scale-based and duration-focused filtering combined with model-based dataset valuation.</td><td>Pipeline-driven observability focusing on hard failure extraction and diversity-aware retention.</td></tr>
-<tr><td>Smoothness Metric</td><td>Discrete third-order finite difference jerk (3q/t3).</td><td>Episode duration thresholding (percentile-based time cuts as a proxy for operator hesitation).</td><td>SPARC (Spectral Arc Length) or LDLJ (Log Dimensionless Jerk) to mitigate high-frequency encoder noise.</td></tr>
-<tr><td>Path Efficiency</td><td>Joint-space tortuosity (ArcLength/NetDisplacement).</td><td>Manual protocol-level hygiene during teleoperation (eliminating wandering runs upfront).</td><td>Task-phase segmentation (evaluating path efficiency up to keyframes rather than global start-to-end).</td></tr>
+<tr><td>Smoothness Metric</td><td>Discrete third-order finite difference jerk (\(\Delta^{3} q / \Delta t^{3}\)).</td><td>Episode duration thresholding (percentile-based time cuts as a proxy for operator hesitation).</td><td>SPARC (Spectral Arc Length) or LDLJ (Log Dimensionless Jerk) to mitigate high-frequency encoder noise.</td></tr>
+<tr><td>Path Efficiency</td><td>Joint-space tortuosity (\(\text{arc length} / \text{net displacement}\)).</td><td>Manual protocol-level hygiene during teleoperation (eliminating wandering runs upfront).</td><td>Task-phase segmentation (evaluating path efficiency up to keyframes rather than global start-to-end).</td></tr>
 <tr><td>Coreset Selection</td><td>Top-K Quality Ranking (Retaining top 75% by composite score).</td><td>Stratified task-variant pooling (balancing clean "Easy" and diverse "Messy" data splits).</td><td>Quality-Weighted Diversity Sampling (Combining quality filtering with farthest-point/k-center spatial coverage to avoid mode collapse).</td></tr>
 <tr><td>Handling Recoveries</td><td>Penalizes trajectory direction reversals (can mistakenly drop successful recoveries).</td><td>Explicitly preserves recovery behaviors (e.g., re-grasping a dropped object) to aid policy self-correction.</td><td></td></tr>
 </tbody>

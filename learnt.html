@@ -202,7 +202,7 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 <p><strong>The Numerator (<i>q</i><sub><i>t</i>+2</sub> &minus; 3<i>q</i><sub><i>t</i>+1</sub> + 3<i>q</i><sub><i>t</i></sub> &minus; <i>q</i><sub><i>t</i>&minus;1</sub>):</strong> This is a mathematical shortcut called a "third finite difference." To get jerk, you have to measure the change in position (velocity), then the change in velocity (acceleration), and finally the change in acceleration (jerk). The multipliers (the 3s and minus signs) are the direct mathematical result of stacking those three layers of differences into one single formula.</p>
 <p><strong>The Denominator (&Delta;<i>t</i><sup>3</sup>):</strong> &Delta;<i>t</i> (Delta <i>t</i>) is the set time interval between each recorded frame. Because jerk is the <em>third</em> level of change over time (position &rarr; velocity &rarr; acceleration &rarr; jerk), the time gap must be cubed (&Delta;<i>t</i> &times; &Delta;<i>t</i> &times; &Delta;<i>t</i>) to scale the final number correctly.</p>
 <ul class="doc-dash">
-<li>Differentiated acceleration (rad or m/s^3)</li>
+<li>Differentiated acceleration (\(\mathrm{rad/s^{3}}\) or \(\mathrm{m/s^{3}}\))</li>
 <li>Third time derivative of position</li>
 <li>High jerk indicates sudden movements/hand tremor/hiccups etc</li>
 </ul>
@@ -238,10 +238,10 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 </ul>
 <ul class="doc-disc">
 <li>a standard recording rate of 30 frames per second (FPS), a new data frame should arrive every 33.3 milliseconds (&Delta;<i>t</i><sub>nominal</sub>).</li>
-<li>equation &Delta;<i>t</i><sub><i>k</i></sub> calculates the actual time between two frames. If the gap between any two frames is larger than 50 milliseconds (1. 5 &times; &Delta;<i>t</i><sub>nominal</sub>), it counts as a dropped packet. If an episode has more than 3 of these dropped packets, the data is too stuttery and is thrown out.</li>
+<li>equation &Delta;<i>t</i><sub><i>k</i></sub> calculates the actual time between two frames. If the gap between any two frames is larger than 50 milliseconds (\(1.5 \times \Delta t_{\mathrm{nominal}}\)), it counts as a dropped packet. If an episode has more than 3 of these dropped packets, the data is too stuttery and is thrown out.</li>
 </ul>
 </li>
-<li><strong>Action-State Tracking Divergence</strong> (ensure s that follower followed and did not get stuck or stalled)
+<li><strong>Action-State Tracking Divergence</strong> (ensures the follower followed and did not get stuck or stalled)
 <p class="doc-eq doc-eq-math">\[ \delta_t = \max_{j \in [1..7]} \left| a_{t,j} - s_{t,j} \right| \]</p>
 <ol class="doc-roman">
 <li><strong><i>a</i><sub><i>t,j</i></sub> &minus; <i>s</i><sub><i>t,j</i></sub>:</strong> It takes the <em>Action</em> (<i>a</i>) the human commanded for a specific joint (<i>j</i>) at a specific time (<i>t</i>) and subtracts the actual <em>State</em> (<i>s</i>) where the robot's joint actually is.</li>
@@ -276,7 +276,6 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 </ul>
 </li>
 </ul>
-<ol class="doc-dec"><li>Resample all successful episodes in a task to a normalized length \(L=100\) using cubic spline interpolation.</li><li>For every pair of trajectories \((E_i,E_j)\), compute their pairwise <strong>Dynamic Time Warping (DTW)</strong> distance over the 7 joint angles:<p class="doc-eq doc-eq-math">\[ D(E_i,E_j)=\operatorname{DTW}\left(q_{1:L}^{(i)},q_{1:L}^{(j)}\right) \]</p></li><li>Identify the <strong>Medoid Trajectory</strong> \(E^*\) (the most representative, canonical demonstration):<p class="doc-eq doc-eq-math">\[ E^*=\arg\min_{E_i}\sum_{j=1}^{N}D(E_i,E_j) \]</p></li><li>Calculate the distance of every episode to the canonical medoid: \(d_i=D(E_i,E^*)\).</li><li><strong>Rejection rule:</strong><p class="doc-eq doc-eq-math">\[ \begin{gathered}\text{Reject }E_i\text{ if }d_i>\operatorname{Median}(d)\\+2.0\times\operatorname{MAD}(d)\end{gathered} \]</p></li></ol>
 <ul class="doc-dash">
 <li><strong>Variables:</strong> <i>q</i><sup>(<i>i</i>)</sup> and <i>q</i><sup>(<i>j</i>)</sup> represent the two different robot recordings (like Person A and Person B drawing the "S"). The 1: <i>L</i> means it is looking at the full timeline of both recordings, from frame 1 to frame <i>L</i> (100)</li>
 <li>The algorithm creates a 2D mathematical grid. The bottom axis is the timeline of Episode <i>i</i> (1 to 100 frames), and the side axis is the timeline of Episode <i>j</i> (1 to 100 frames)</li>
@@ -306,7 +305,7 @@ MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } }
 <p class="doc-eq doc-eq-math">\[ \text{Reject } E_i \text{ if } d_i > \mathrm{Median}(d) + 2.0 \times \mathrm{MAD}(d) \]</p>
 <ul class="doc-dash">
 <li>MAD = Median Absolute Deviation (not affected by extreme values)</li>
-<li>It calculates the most centrally located data point in a clusterlates the distance (did_idi) of every individual episode to the Medoid.</li>
+<li>It calculates the distance \(d_i\) of every individual episode to the medoid.</li>
 <li>It finds the middle-ground distance across the whole dataset</li>
 <li>If a specific episode's distance is greater than the median plus twice the typical variation, it proves the human operator took a path that was <em>too</em> extreme or unusual. That episode is rejected and deleted.</li>
 <li>*trajectory similarity vs previously unusual data</li>
